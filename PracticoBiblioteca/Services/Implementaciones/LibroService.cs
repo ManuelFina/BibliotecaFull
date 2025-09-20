@@ -1,53 +1,82 @@
 ﻿using PracticoBiblioteca.Models;
 using PracticoBiblioteca.Services.Interfaces;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
 
 namespace PracticoBiblioteca.Services.Implementaciones;
 
 public class LibroService : ILibroService
 {
-private readonly List<Libro> _libros =
-[
-    new Libro 
-    { 
-        Id = 1, 
-        Titulo = "Cien Años de Soledad", 
-        Autor = "Gabriel García Márquez", 
-        Imagen = "img/librodos.jpg", 
-        AñoPublicacion = 1967 
-    },
-    new Libro 
-    { 
-        Id = 2, 
-        Titulo = "Don Quijote de la Mancha", 
-        Autor = "Miguel de Cervantes", 
-        Imagen = "img/libro.jpg", 
-        AñoPublicacion = 1605 
-    },
-    new Libro 
-    { 
-        Id = 3, 
-        Titulo = "1984", 
-        Autor = "George Orwell", 
-        Imagen = "img/librotres.jpg", 
-        AñoPublicacion = 1949 
-    }
-];
+    private readonly HttpClient _httpClient;
 
-    public List<Libro> ObtenerTodos() => _libros;
-
-    public Libro? ObtenerPorId(int id) => _libros.FirstOrDefault(l => l.Id == id);
-
-    public void Agregar(Libro libro)
+    public LibroService(HttpClient httpClient)
     {
-        libro.Id = _libros.Max(l => l.Id) + 1;
-        _libros.Add(libro);
+        _httpClient = httpClient;
+        _httpClient.DefaultRequestHeaders.Accept.Clear();
+        _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
     }
 
-    public void Actualizar(Libro libro)
+    public async Task<List<Libro>> ObtenerTodos()
     {
-        var index = _libros.FindIndex(l => l.Id == libro.Id);
-        if (index >= 0) _libros[index] = libro;
+        try
+        {
+            return await _httpClient.GetFromJsonAsync<List<Libro>>("api/libros")
+                   ?? new List<Libro>();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Error al obtener los libros", ex);
+        }
     }
 
-    public void Eliminar(int id) => _libros.RemoveAll(l => l.Id == id);
+    public async Task<Libro?> ObtenerPorId(int id)
+    {
+        try
+        {
+            return await _httpClient.GetFromJsonAsync<Libro>($"api/libros/{id}");
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error al obtener el libro con ID {id}", ex);
+        }
+    }
+
+    public async void Agregar(Libro libro)
+    {
+        try
+        {
+            var response = await _httpClient.PostAsJsonAsync("api/libros", libro);
+            response.EnsureSuccessStatusCode();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Error al agregar el libro", ex);
+        }
+    }
+
+    public async void Actualizar(Libro libro)
+    {
+        try
+        {
+            var response = await _httpClient.PutAsJsonAsync($"api/libros/{libro.Id}", libro);
+            response.EnsureSuccessStatusCode();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Error al actualizar el libro", ex);
+        }
+    }
+
+    public async void Eliminar(int id)
+    {
+        try
+        {
+            var response = await _httpClient.DeleteAsync($"api/libros/{id}");
+            response.EnsureSuccessStatusCode();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Error al eliminar el libro", ex);
+        }
+    }
 }
