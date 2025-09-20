@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using PracticoBiblioteca.Models;
+using PracticoBiblioteca.Shared.Models;
 
 namespace PracticoBiblioteca.API.Data;
 
@@ -9,5 +9,5 @@ public class DataContext : DbContext
     {
     }
     public DbSet<Libro> Productos { get; set; }
-    //public DbSet<Usuario> Usuarios { get; set; }
+    public DbSet<Usuario> Usuarios { get; set; }
 }
