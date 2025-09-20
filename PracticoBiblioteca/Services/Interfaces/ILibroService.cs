@@ -1,4 +1,4 @@
-﻿using PracticoBiblioteca.Models;
+﻿using PracticoBiblioteca.Shared.Models;
 using System.Collections.Generic;
 
 namespace PracticoBiblioteca.Services.Interfaces;

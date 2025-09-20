@@ -1,4 +1,4 @@
-﻿using PracticoBiblioteca.Models;
+﻿using PracticoBiblioteca.Shared.Models;
 using PracticoBiblioteca.Services.Interfaces;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;

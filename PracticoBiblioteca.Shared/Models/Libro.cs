@@ -1,4 +1,4 @@
-﻿namespace PracticoBiblioteca.Models;
+﻿namespace PracticoBiblioteca.Shared.Models;
 
 public class Libro
 {
