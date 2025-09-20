@@ -24,8 +24,4 @@
     <ProjectReference Include="..\PracticoBiblioteca.Shared\PracticoBiblioteca.Shared.csproj" />
   </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Repositories\" />
-  </ItemGroup>
-
 </Project>

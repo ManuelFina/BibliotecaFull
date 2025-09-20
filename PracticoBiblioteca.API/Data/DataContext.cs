@@ -8,6 +8,6 @@ public class DataContext : DbContext
     public DataContext(DbContextOptions<DataContext> options) : base(options)
     {
     }
-    public DbSet<Libro> Productos { get; set; }
+    public DbSet<Libro> Libros { get; set; }
     public DbSet<Usuario> Usuarios { get; set; }
 }
