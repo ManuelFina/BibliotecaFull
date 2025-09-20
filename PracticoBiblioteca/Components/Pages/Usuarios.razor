@@ -1,0 +1,104 @@
+﻿@page "/usuarios"
+@inject IUsuarioService UsuarioService
+@inject NavigationManager Navigation
+
+<h3 class="mb-4">Gestión de Usuarios</h3>
+
+<button class="btn btn-success mb-3" @onclick="Volver">
+    <i class="bi bi-arrow-left-circle me-1"></i> Volver al menú
+</button>
+
+<button class="btn btn-success mb-3" @onclick="NuevoUsuario">
+    <i class="bi bi-person-plus me-1"></i> Agregar usuario
+</button>
+
+@if (usuarios.Count == 0)
+{
+    <div class="alert alert-info">No hay usuarios registrados.</div>
+}
+else
+{
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        @foreach (var usuario in usuarios)
+        {
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <img src="@usuario.Imagen" class="card-img-top" alt="Foto usuario" style="height: 250px; object-fit: cover;" />
+                    <div class="card-body">
+                        <h5 class="card-title">@usuario.Nombre</h5>
+                        <p class="card-text"><strong>Email:</strong> @usuario.Email</p>
+                        <button class="btn btn-warning btn-sm me-2" @onclick="() => EditarUsuario(usuario.Id)">Editar</button>
+                        <button class="btn btn-danger btn-sm" @onclick="() => ConfirmarEliminar(usuario.Id, usuario.Nombre)">Eliminar</button>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@if (mostrarModal)
+{
+    <div class="modal fade show" style="display:block; background-color: rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header bg-danger text-white">
+                    <h5 class="modal-title">Confirmar eliminación</h5>
+                    <button type="button" class="btn-close" @onclick="CerrarModal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>¿Seguro que deseas eliminar al usuario <strong>@usuarioAEliminarNombre</strong>?</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-secondary" @onclick="CerrarModal">Cancelar</button>
+                    <button class="btn btn-danger" @onclick="EliminarConfirmado">Eliminar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    private List<Usuario> usuarios = new();
+    private bool mostrarModal = false;
+    private int usuarioAEliminarId;
+    private string usuarioAEliminarNombre = string.Empty;
+
+    protected override void OnInitialized()
+    {
+        usuarios = UsuarioService.ObtenerTodos();
+    }
+
+    private void NuevoUsuario()
+    {
+        Navigation.NavigateTo("/usuarioform/0"); 
+    }
+
+    private void EditarUsuario(int id)
+    {
+        Navigation.NavigateTo($"/usuarioform/{id}");
+    }
+
+    private void ConfirmarEliminar(int id, string nombre)
+    {
+        usuarioAEliminarId = id;
+        usuarioAEliminarNombre = nombre;
+        mostrarModal = true;
+    }
+
+    private void CerrarModal()
+    {
+        mostrarModal = false;
+    }
+
+    private void EliminarConfirmado()
+    {
+        UsuarioService.Eliminar(usuarioAEliminarId);
+        usuarios = UsuarioService.ObtenerTodos();
+        mostrarModal = false;
+    }
+
+    private void Volver()
+    {
+        Navigation.NavigateTo("/menu");
+    }
+}

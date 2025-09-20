@@ -1,0 +1,65 @@
+﻿@page "/"
+@inject IUsuarioService UsuarioService
+@inject NavigationManager Nav
+
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-4">
+            <div class="card shadow">
+                <div class="card-body text-center">
+
+                    <img src="img/logo.jpg" alt="Logo Biblioteca"
+                         style="max-width: 120px; margin-bottom: 20px;" />
+
+                    <h3 class="card-title text-center mb-4">
+                        <i class="bi bi-box-arrow-in-right me-2"></i>Iniciar Sesión
+                    </h3>
+
+                    <div class="mb-3 text-start">
+                        <label for="email" class="form-label">
+                            <i class="bi bi-envelope-fill me-1"></i>Correo electrónico
+                        </label>
+                        <input id="email" @bind="email" type="email" class="form-control" placeholder="Ingrese su correo" />
+                    </div>
+
+                    <div class="mb-3 text-start">
+                        <label for="clave" class="form-label">
+                            <i class="bi bi-lock-fill me-1"></i>Contraseña
+                        </label>
+                        <input id="clave" @bind="clave" type="password" class="form-control" placeholder="Ingrese su contraseña" />
+                    </div>
+
+                    <button class="btn btn-primary w-100" @onclick="IniciarSesion">
+                        <i class="bi bi-box-arrow-in-right me-1"></i> Iniciar sesión
+                    </button>
+
+                    @if (!string.IsNullOrEmpty(errorMensaje))
+                    {
+                        <div class="alert alert-danger mt-3" role="alert">
+                            <i class="bi bi-exclamation-triangle-fill me-2"></i>@errorMensaje
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@code {
+    private string email = "";
+    private string clave = "";
+    private string errorMensaje = "";
+
+    private void IniciarSesion()
+    {
+        var user = UsuarioService.ObtenerPorCredenciales(email, clave);
+        if (user != null)
+        {
+            Nav.NavigateTo("/menu");
+        }
+        else
+        {
+            errorMensaje = "Correo o contraseña incorrectos.";
+        }
+    }
+}

@@ -1,0 +1,76 @@
+﻿@page "/libroform/{Id:int}"
+@inject ILibroService LibroService
+@inject NavigationManager Nav
+
+<h3 class="mb-4">@(libroEditando.Id == 0 ? "Nuevo Libro" : "Editar Libro")</h3>
+
+<EditForm Model="libroEditando" OnValidSubmit="GuardarLibro">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+
+    <div class="mb-3">
+        <label class="form-label">Título</label>
+        <InputText class="form-control" @bind-Value="libroEditando.Titulo" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Autor</label>
+        <InputText class="form-control" @bind-Value="libroEditando.Autor" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Año de Publicación</label>
+        <InputNumber class="form-control" @bind-Value="libroEditando.AñoPublicacion" />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Ruta Imagen</label>
+        <InputText class="form-control" @bind-Value="libroEditando.Imagen" />
+    </div>
+
+    <button class="btn btn-primary me-2" type="submit">
+        <i class="bi bi-save"></i> Guardar
+    </button>
+    <button class="btn btn-secondary" type="button" @onclick="Cancelar">
+        Cancelar
+    </button>
+</EditForm>
+
+@code {
+    [Parameter] public int Id { get; set; }
+    private Libro libroEditando = new();
+
+    protected override void OnInitialized()
+    {
+        if (Id != 0)
+        {
+            var libro = LibroService.ObtenerTodos().FirstOrDefault(l => l.Id == Id);
+            if (libro != null)
+            {
+                libroEditando = new Libro
+                {
+                    Id = libro.Id,
+                    Titulo = libro.Titulo,
+                    Autor = libro.Autor,
+                    AñoPublicacion = libro.AñoPublicacion,
+                    Imagen = libro.Imagen
+                };
+            }
+        }
+    }
+
+    private void GuardarLibro()
+    {
+        if (libroEditando.Id == 0)
+            LibroService.Agregar(libroEditando);
+        else
+            LibroService.Actualizar(libroEditando);
+
+        Nav.NavigateTo("/libros");
+    }
+
+    private void Cancelar()
+    {
+        Nav.NavigateTo("/libros");
+    }
+}

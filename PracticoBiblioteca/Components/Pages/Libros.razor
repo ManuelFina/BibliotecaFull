@@ -1,0 +1,70 @@
+﻿@page "/libros"
+@inject ILibroService LibroService
+@inject NavigationManager Nav
+
+<h3 class="mb-4">Gestión de Libros</h3>
+
+<button class="btn btn-success mb-3" @onclick="VolverAtras">
+    <i class="bi bi-arrow-left-circle me-1"></i> Volver atrás
+</button>
+
+<button class="btn btn-success mb-3" @onclick="NuevoLibro">
+    <i class="bi bi-plus-circle me-1"></i> Agregar libro
+</button>
+
+@if (libros.Count == 0)
+{
+    <div class="alert alert-info">No hay libros cargados.</div>
+}
+else
+{
+    <div class="row row-cols-1 row-cols-md-3 g-4">
+        @foreach (var libro in libros)
+        {
+            <div class="col">
+                <div class="card h-100 shadow-sm">
+                    <img src="@libro.Imagen" class="card-img-top" alt="Portada" style="height: 250px; object-fit: cover;" />
+                    <div class="card-body">
+                        <h5 class="card-title">@libro.Titulo</h5>
+                        <p class="card-text">
+                            <strong>Autor:</strong> @libro.Autor<br />
+                            <strong>Año:</strong> @libro.AñoPublicacion
+                        </p>
+                        <button class="btn btn-warning btn-sm me-2" @onclick="() => EditarLibro(libro.Id)">Editar</button>
+                        <button class="btn btn-danger btn-sm" @onclick="() => EliminarLibro(libro.Id)">Eliminar</button>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}
+
+@code {
+    private List<Libro> libros = new();
+
+    protected override void OnInitialized()
+    {
+        libros = LibroService.ObtenerTodos();
+    }
+
+    private void NuevoLibro()
+    {
+        Nav.NavigateTo("/libroform/0"); 
+    }
+
+    private void EditarLibro(int id)
+    {
+        Nav.NavigateTo($"/libroform/{id}");
+    }
+
+    private void EliminarLibro(int id)
+    {
+        LibroService.Eliminar(id);
+        libros = LibroService.ObtenerTodos();
+    }
+
+    private void VolverAtras()
+    {
+        Nav.NavigateTo("/menu");
+    }
+}
