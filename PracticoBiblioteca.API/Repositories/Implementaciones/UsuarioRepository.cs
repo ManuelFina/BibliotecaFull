@@ -35,29 +35,37 @@ namespace PracticoBiblioteca.API.Repositories.Implementaciones
 
         }
 
-        public Task CreateAsync(Usuario usuario)
+        public async Task<List<Usuario>> ObtenerTodosAsync()
         {
-            throw new NotImplementedException();
+            return await _context.Usuarios.ToListAsync();
         }
 
-        public Task DeleteAsync(int id)
+        public async Task<Usuario?> ObtenerPorIdAsync(int id)
         {
-            throw new NotImplementedException();
+            return await _context.Usuarios.FindAsync(id);
         }
 
-        public Task<IEnumerable<Usuario>> GetAllAsync()
+        public async Task AgregarAsync(Usuario usuario)
         {
-            throw new NotImplementedException();
+            _context.Usuarios.Add(usuario);
+            await _context.SaveChangesAsync();
         }
 
-        public Task<Usuario> GetByIdAsync(int id)
+        public async Task ActualizarAsync(Usuario usuario)
         {
-            throw new NotImplementedException();
+            _context.Usuarios.Update(usuario);
+            await _context.SaveChangesAsync();
         }
 
-        public Task UpdateAsync(Usuario usuario)
+        public async Task EliminarAsync(int id)
         {
-            throw new NotImplementedException();
+            var usuario = await _context.Usuarios.FindAsync(id);
+            if (usuario != null)
+            {
+                _context.Usuarios.Remove(usuario);
+                await _context.SaveChangesAsync();
+            }
         }
     }
 }
+

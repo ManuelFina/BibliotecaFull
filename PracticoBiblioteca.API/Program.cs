@@ -4,11 +4,9 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddOpenApi();
 
-builder.Services.AddAuthorization(options =>
-{
-    options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"));
-    options.AddPolicy("ClientePolicy", policy => policy.RequireRole("Cliente"));
-});
+builder.Services.AddAuthorizationBuilder()
+    .AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"))
+    .AddPolicy("ClientePolicy", policy => policy.RequireRole("Cliente"));
 
 
 var app = builder.Build();

@@ -26,10 +26,10 @@ namespace PracticoBiblioteca.API.Repositories.Implementaciones
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
 
-        public async Task<IEnumerable<Prestamo>> ObtenerPorUsuarioAsync(int usuarioId)
+        public async Task<IEnumerable<Prestamo>> ObtenerPorUsuarioAsync(string usuarioId)
         {
             return await _context.Prestamos
-                //.Where(p => p.UsuarioId == usuarioId)
+                .Where(p => p.UsuarioId == usuarioId)
                 .Include(p => p.Libro)
                 .ToListAsync();
         }
