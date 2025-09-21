@@ -12,4 +12,6 @@ public interface IUsuarioService
     Task AgregarAsync(Usuario usuario);
     Task ActualizarAsync(Usuario usuario);
     Task EliminarAsync(int id);
+    Task<Usuario?> RegistrarAsync(RegistroDTO registroDto);
+
 }

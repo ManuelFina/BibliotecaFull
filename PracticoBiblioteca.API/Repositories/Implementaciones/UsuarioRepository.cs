@@ -1,38 +1,79 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using PracticoBiblioteca.API.Data;
 using PracticoBiblioteca.API.Repositories.Interfaces;
 using PracticoBiblioteca.Shared.DTOs;
 using PracticoBiblioteca.Shared.Models;
-
+using BCrypt.Net;
 
 namespace PracticoBiblioteca.API.Repositories.Implementaciones
 {
-    public class UsuarioRepository(DataContext context, ILogger<UsuarioRepository> logger) : IUsuarioRepository
+    public class UsuarioRepository : IUsuarioRepository
     {
-        private readonly DataContext _context = context;
-        private readonly ILogger<UsuarioRepository> _logger = logger;
+        private readonly DataContext _context;
+        private readonly ILogger<UsuarioRepository> _logger;
 
+        public UsuarioRepository(DataContext context, ILogger<UsuarioRepository> logger)
+        {
+            _context = context;
+            _logger = logger;
+        }
+
+        // 🔹 Autenticación
         public async Task<SesionDTO?> AutenticacionAsync(LoginDTO login)
         {
             try
             {
+                var usuario = await _context.Usuarios
+                    .FirstOrDefaultAsync(u => u.Email == login.Email && u.Activo);
 
-                var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == login.Email && u.Clave == login.Password && u.Activo == true);
                 if (usuario == null) return null;
+
+                // Verificar hash
+                bool claveValida = BCrypt.Net.BCrypt.Verify(login.Password, usuario.Clave);
+                if (!claveValida) return null;
 
                 return new SesionDTO
                 {
-                    Token = Guid.NewGuid().ToString(),
+                    Token = Guid.NewGuid().ToString(), // luego reemplazar por JWT
                     Expiracion = DateTime.Now.AddHours(24),
                     Email = usuario.Email
                 };
             }
             catch (Exception ex)
             {
-                _logger.LogError($"Error al autenticar login. Detalle: {ex.Message}");
+                _logger.LogError(ex, "Error al autenticar login");
                 throw;
             }
+        }
+        public async Task<Usuario?> RegistrarAsync(RegistroDTO registroDto)
+        {
+            try
+            {
+                var existente = await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == registroDto.Email);
+                if (existente != null) return null;
 
+                var hashedClave = BCrypt.Net.BCrypt.HashPassword(registroDto.Clave);
+
+                var usuario = new Usuario
+                {
+                    Nombre = registroDto.Nombre,
+                    Email = registroDto.Email,
+                    Clave = hashedClave,
+                    Rol = registroDto.Rol ?? "Cliente",
+                    Activo = true
+                };
+
+                _context.Usuarios.Add(usuario);
+                await _context.SaveChangesAsync();
+
+                return usuario;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al registrar usuario");
+                throw;
+            }
         }
 
         public async Task<List<Usuario>> ObtenerTodosAsync()
@@ -43,6 +84,11 @@ namespace PracticoBiblioteca.API.Repositories.Implementaciones
         public async Task<Usuario?> ObtenerPorIdAsync(int id)
         {
             return await _context.Usuarios.FindAsync(id);
+        }
+
+        public async Task<Usuario?> ObtenerPorEmailAsync(string email)
+        {
+            return await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == email);
         }
 
         public async Task AgregarAsync(Usuario usuario)
@@ -68,4 +114,3 @@ namespace PracticoBiblioteca.API.Repositories.Implementaciones
         }
     }
 }
-
