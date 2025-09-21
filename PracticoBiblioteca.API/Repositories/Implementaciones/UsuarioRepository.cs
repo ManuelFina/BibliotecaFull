@@ -19,7 +19,6 @@ namespace PracticoBiblioteca.API.Repositories.Implementaciones
             _logger = logger;
         }
 
-        // 🔹 Autenticación
         public async Task<SesionDTO?> AutenticacionAsync(LoginDTO login)
         {
             try
