@@ -4,11 +4,11 @@ namespace PracticoBiblioteca.API.Repositories.Interfaces
 {
     public interface IPrestamoRepository
     {
-        Task<IEnumerable<Prestamo>> GetAllAsync();
-        Task<Prestamo?> GetByIdAsync(int id);
-        Task<IEnumerable<Prestamo>> GetByUsuarioAsync(int usuarioId);
-        Task<Prestamo> AddAsync(Prestamo prestamo);
-        Task UpdateAsync(Prestamo prestamo);
-        Task DeleteAsync(int id);
+        Task<IEnumerable<Prestamo>> ObtenerTodosAsync();
+        Task<Prestamo?> ObtenerPorIdAsync(int id);
+        Task<IEnumerable<Prestamo>> ObtenerPorUsuarioAsync(int usuarioId);
+        Task<Prestamo> AgregarAsync(Prestamo prestamo);
+        Task EditarAsync(Prestamo prestamo);
+        Task EliminarAsync(int id);
     }
 }

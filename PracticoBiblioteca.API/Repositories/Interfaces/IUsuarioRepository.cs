@@ -4,7 +4,7 @@ namespace PracticoBiblioteca.API.Repositories.Interfaces
 {
     public interface IUsuarioRepository
     {
-        Task<SesionDTO> AuthenticateAsync(LoginDTO login);
+        Task<SesionDTO?> AutenticacionAsync(LoginDTO login);
 
     }
 }

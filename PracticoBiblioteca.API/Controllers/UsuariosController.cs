@@ -21,11 +21,11 @@ namespace PracticoBiblioteca.API.Controllers
         }
 
         [HttpPost("Authenticate")]
-        public async Task<IActionResult> Authenticate([FromBody] LoginDTO login)
+        public async Task<IActionResult> Autenticacion([FromBody] LoginDTO login)
         {
             try
             {
-                var sesion = await _usuarioRepository.AuthenticateAsync(login);
+                var sesion = await _usuarioRepository.AutenticacionAsync(login);
 
                 if (sesion == null)
                 {

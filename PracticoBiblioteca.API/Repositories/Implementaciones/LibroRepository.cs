@@ -5,16 +5,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace PracticoBiblioteca.API.Repositories.Implementaciones
 {
-    public class LibroRepository : ILibroRepository
+    public class LibroRepository(DataContext context, ILogger<LibroRepository> logger) : ILibroRepository
     {
-        private readonly DataContext _context;
-        private readonly ILogger<LibroRepository> _logger;
-
-        public LibroRepository(DataContext context, ILogger<LibroRepository> logger)
-        {
-            _context = context;
-            _logger = logger;
-        }
+        private readonly DataContext _context = context;
+        private readonly ILogger<LibroRepository> _logger = logger;
 
         public async Task AgregarAsync(Libro libro)
         {

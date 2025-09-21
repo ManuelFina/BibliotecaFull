@@ -1,38 +1,101 @@
 ﻿using PracticoBiblioteca.Shared.Models;
 using PracticoBiblioteca.Services.Interfaces;
+using PracticoBiblioteca.Shared.DTOs;
+using System.Net.Http.Json;
+using Microsoft.Extensions.Logging;
 
 namespace PracticoBiblioteca.Services.Implementaciones;
 
 public class UsuarioService : IUsuarioService
 {
-    private readonly List<Usuario> _usuarios =
-    [
-        new Usuario
-        { 
-            Id = 1, 
-            Nombre = "Admin",
-            Email = "admin@biblioteca.com", 
-            Clave = "admin", 
-            Imagen = "img/admin.png"
-        },
-    ];
+    private readonly HttpClient _httpClient;
+    private readonly ILogger<UsuarioService> _logger;
 
-    public List<Usuario> ObtenerTodos() => _usuarios;
-
-    public Usuario? ObtenerPorCredenciales(string email, string clave) =>
-        _usuarios.FirstOrDefault(u => u.Email == email && u.Clave == clave);
-
-    public void Agregar(Usuario usuario)
+    public UsuarioService(HttpClient httpClient, ILogger<UsuarioService> logger)
     {
-        usuario.Id = _usuarios.Max(u => u.Id) + 1;
-        _usuarios.Add(usuario);
+        _httpClient = httpClient;
+        _logger = logger;
     }
 
-    public void Actualizar(Usuario usuario)
+    public async Task<SesionDTO?> AutenticacionAsync(LoginDTO login)
     {
-        var index = _usuarios.FindIndex(u => u.Id == usuario.Id);
-        if (index >= 0) _usuarios[index] = usuario;
+        try
+        {
+            var response = await _httpClient.PostAsJsonAsync("api/usuarios/authenticate", login);
+            response.EnsureSuccessStatusCode();
+
+            var result = await response.Content.ReadFromJsonAsync<SesionDTO>();
+            return result;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error en la autenticación");
+            throw;
+        }
     }
 
-    public void Eliminar(int id) => _usuarios.RemoveAll(u => u.Id == id);
+    public async Task<List<Usuario>> ObtenerTodosAsync()
+    {
+        try
+        {
+            return await _httpClient.GetFromJsonAsync<List<Usuario>>("api/usuarios")
+                   ?? new List<Usuario>();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Error al obtener los usuarios", ex);
+        }
+    }
+
+    public async Task<Usuario?> ObtenerPorIdAsync(int id)
+    {
+        try
+        {
+            return await _httpClient.GetFromJsonAsync<Usuario>($"api/usuarios/{id}");
+        }
+        catch (Exception ex)
+        {
+            throw new Exception($"Error al obtener el usuario con ID {id}", ex);
+        }
+    }
+
+    public async Task AgregarAsync(Usuario usuario)
+    {
+        try
+        {
+            var response = await _httpClient.PostAsJsonAsync("api/usuarios", usuario);
+            response.EnsureSuccessStatusCode();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Error al agregar el usuario", ex);
+        }
+    }
+
+    public async Task ActualizarAsync(Usuario usuario)
+    {
+        try
+        {
+            var response = await _httpClient.PutAsJsonAsync($"api/usuarios/{usuario.Id}", usuario);
+            response.EnsureSuccessStatusCode();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Error al actualizar el usuario", ex);
+        }
+    }
+
+    public async Task EliminarAsync(int id)
+    {
+        try
+        {
+            var response = await _httpClient.DeleteAsync($"api/usuarios/{id}");
+            response.EnsureSuccessStatusCode();
+        }
+        catch (Exception ex)
+        {
+            throw new Exception("Error al eliminar el usuario", ex);
+        }
+    }
 }
+

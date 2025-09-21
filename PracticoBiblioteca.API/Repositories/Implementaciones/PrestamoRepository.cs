@@ -6,16 +6,11 @@ using PracticoBiblioteca.Shared.Models;
 
 namespace PracticoBiblioteca.API.Repositories.Implementaciones
 {
-    public class PrestamoRepository : IPrestamoRepository
+    public class PrestamoRepository(DataContext context) : IPrestamoRepository
     {
-        private readonly DataContext _context;
+        private readonly DataContext _context = context;
 
-        public PrestamoRepository(DataContext context)
-        {
-            _context = context;
-        }
-
-        public async Task<IEnumerable<Prestamo>> GetAllAsync()
+        public async Task<IEnumerable<Prestamo>> ObtenerTodosAsync()
         {
             return await _context.Prestamos
                 .Include(p => p.Libro)
@@ -23,7 +18,7 @@ namespace PracticoBiblioteca.API.Repositories.Implementaciones
                 .ToListAsync();
         }
 
-        public async Task<Prestamo?> GetByIdAsync(int id)
+        public async Task<Prestamo?> ObtenerPorIdAsync(int id)
         {
             return await _context.Prestamos
                 .Include(p => p.Libro)
@@ -31,7 +26,7 @@ namespace PracticoBiblioteca.API.Repositories.Implementaciones
                 .FirstOrDefaultAsync(p => p.Id == id);
         }
 
-        public async Task<IEnumerable<Prestamo>> GetByUsuarioAsync(int usuarioId)
+        public async Task<IEnumerable<Prestamo>> ObtenerPorUsuarioAsync(int usuarioId)
         {
             return await _context.Prestamos
                 //.Where(p => p.UsuarioId == usuarioId)
@@ -39,20 +34,20 @@ namespace PracticoBiblioteca.API.Repositories.Implementaciones
                 .ToListAsync();
         }
 
-        public async Task<Prestamo> AddAsync(Prestamo prestamo)
+        public async Task<Prestamo> AgregarAsync(Prestamo prestamo)
         {
             _context.Prestamos.Add(prestamo);
             await _context.SaveChangesAsync();
             return prestamo;
         }
 
-        public async Task UpdateAsync(Prestamo prestamo)
+        public async Task EditarAsync(Prestamo prestamo)
         {
             _context.Prestamos.Update(prestamo);
             await _context.SaveChangesAsync();
         }
 
-        public async Task DeleteAsync(int id)
+        public async Task EliminarAsync(int id)
         {
             var prestamo = await _context.Prestamos.FindAsync(id);
             if (prestamo != null)

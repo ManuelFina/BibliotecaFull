@@ -1,13 +1,15 @@
-﻿using PracticoBiblioteca.Shared.Models;
+﻿using PracticoBiblioteca.Shared.DTOs;
+using PracticoBiblioteca.Shared.Models;
 using System.Collections.Generic;
 
 namespace PracticoBiblioteca.Services.Interfaces;
 
 public interface IUsuarioService
 {
-    List<Usuario> ObtenerTodos();
-    Usuario? ObtenerPorCredenciales(string email, string clave);
-    void Agregar(Usuario usuario);
-    void Actualizar(Usuario usuario);
-    void Eliminar(int id);
+    Task<SesionDTO?> AutenticacionAsync(LoginDTO login);
+    Task<List<Usuario>> ObtenerTodosAsync();
+    Task<Usuario?> ObtenerPorIdAsync(int id);
+    Task AgregarAsync(Usuario usuario);
+    Task ActualizarAsync(Usuario usuario);
+    Task EliminarAsync(int id);
 }

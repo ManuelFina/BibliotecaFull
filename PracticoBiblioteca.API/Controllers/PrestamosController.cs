@@ -16,49 +16,49 @@ namespace BibliotecaFull.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<IEnumerable<Prestamo>>> GetAll()
+        public async Task<ActionResult<IEnumerable<Prestamo>>> ObtenerTodos()
         {
-            var prestamos = await _prestamoRepo.GetAllAsync();
+            var prestamos = await _prestamoRepo.ObtenerTodosAsync();
             return Ok(prestamos);
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Prestamo>> GetById(int id)
+        public async Task<ActionResult<Prestamo>> ObtenerPorId(int id)
         {
-            var prestamo = await _prestamoRepo.GetByIdAsync(id);
+            var prestamo = await _prestamoRepo.ObtenerPorIdAsync(id);
             if (prestamo == null) return NotFound();
             return Ok(prestamo);
         }
 
         [HttpGet("usuario/{usuarioId}")]
-        public async Task<ActionResult<IEnumerable<Prestamo>>> GetByUsuario(int usuarioId)
+        public async Task<ActionResult<IEnumerable<Prestamo>>> ObtenerPorUsuario(int usuarioId)
         {
-            var prestamos = await _prestamoRepo.GetByUsuarioAsync(usuarioId);
+            var prestamos = await _prestamoRepo.ObtenerPorUsuarioAsync(usuarioId);
             return Ok(prestamos);
         }
 
         [HttpPost]
-        public async Task<ActionResult<Prestamo>> Create([FromBody] Prestamo prestamo)
+        public async Task<ActionResult<Prestamo>> Crear([FromBody] Prestamo prestamo)
         {
             if (!ModelState.IsValid) return BadRequest(ModelState);
 
-            var nuevoPrestamo = await _prestamoRepo.AddAsync(prestamo);
-            return CreatedAtAction(nameof(GetById), new { id = nuevoPrestamo.Id }, nuevoPrestamo);
+            var nuevoPrestamo = await _prestamoRepo.AgregarAsync(prestamo);
+            return CreatedAtAction(nameof(ObtenerPorId), new { id = nuevoPrestamo.Id }, nuevoPrestamo);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, [FromBody] Prestamo prestamo)
+        public async Task<IActionResult> Editar(int id, [FromBody] Prestamo prestamo)
         {
             if (id != prestamo.Id) return BadRequest();
 
-            await _prestamoRepo.UpdateAsync(prestamo);
+            await _prestamoRepo.EditarAsync(prestamo);
             return NoContent();
         }
 
         [HttpDelete("{id}")]
-        public async Task<IActionResult> Delete(int id)
+        public async Task<IActionResult> Eliminar(int id)
         {
-            await _prestamoRepo.DeleteAsync(id);
+            await _prestamoRepo.EliminarAsync(id);
             return NoContent();
         }
     }

@@ -7,18 +7,12 @@ using PracticoBiblioteca.Shared.Models;
 
 namespace PracticoBiblioteca.API.Repositories.Implementaciones
 {
-    public class UsuarioRepository : IUsuarioRepository
+    public class UsuarioRepository(DataContext context, ILogger<UsuarioRepository> logger) : IUsuarioRepository
     {
-        private readonly DataContext _context;
-        private readonly ILogger<UsuarioRepository> _logger;
+        private readonly DataContext _context = context;
+        private readonly ILogger<UsuarioRepository> _logger = logger;
 
-        public UsuarioRepository(DataContext context, ILogger<UsuarioRepository> logger)
-        {
-            _context = context;
-            _logger = logger;
-        }
-
-        public async Task<SesionDTO?> AuthenticateAsync(LoginDTO login)
+        public async Task<SesionDTO?> AutenticacionAsync(LoginDTO login)
         {
             try
             {
