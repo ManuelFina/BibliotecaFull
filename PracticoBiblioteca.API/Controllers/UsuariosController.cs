@@ -1,11 +1,16 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using PracticoBiblioteca.API.Repositories.Interfaces;
+using PracticoBiblioteca.API.Repositories.Implementaciones;
+using PracticoBiblioteca.Shared.DTOs;
+
 
 namespace PracticoBiblioteca.API.Controllers
 {
-    public class UsuariosController : Controller
+    [Route("api/[controller]")]
+    [ApiController]
+    public class UsuariosController : ControllerBase
     {
-        /*
         private readonly IUsuarioRepository _usuarioRepository;
         private readonly ILogger<UsuariosController> _logger;
 
@@ -16,7 +21,7 @@ namespace PracticoBiblioteca.API.Controllers
         }
 
         [HttpPost("Authenticate")]
-        public async Task<IActionResult> Authenticate([FromBody] Shared.DTO.LoginDTO login)
+        public async Task<IActionResult> Authenticate([FromBody] LoginDTO login)
         {
             try
             {
@@ -34,6 +39,5 @@ namespace PracticoBiblioteca.API.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, "Error interno del servidor");
             }
         }
-        */
     }
 }

@@ -17,7 +17,13 @@ namespace PracticoBiblioteca.Shared.Models
         public string Email { get; set; } = string.Empty;
         [Required]
         public string Clave { get; set; } = string.Empty;
-        public string? Rol { get; set; }
+        [Required]
+        public string? Rol { get; set; } = "Cliente";
+        [Required]
+        public bool Activo { get; set; }
         public string Imagen { get; set; } = string.Empty;
+
+        // Relación con Préstamos
+        public List<Prestamo> Prestamos { get; set; } = new();
     }
 }

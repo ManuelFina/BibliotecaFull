@@ -10,4 +10,5 @@ public class DataContext : DbContext
     }
     public DbSet<Libro> Libros { get; set; }
     public DbSet<Usuario> Usuarios { get; set; }
+    public DbSet<Prestamo> Prestamos { get; set; }
 }
