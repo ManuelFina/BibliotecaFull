@@ -10,7 +10,7 @@ public class Prestamo
 
     // Relación con Usuario
     [Required]
-    public string UsuarioId { get; set; } = string.Empty;
+    public int UsuarioId { get; set; } 
 
     [ForeignKey(nameof(UsuarioId))]
     public Usuario Usuario { get; set; } = null!;
