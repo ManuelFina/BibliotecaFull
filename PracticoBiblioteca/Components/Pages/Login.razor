@@ -65,7 +65,7 @@
 
             if (sesion != null)
             {
-                await SesionService.GuardarSesion(sesion);
+                SesionService.GuardarSesion(sesion);
                 Nav.NavigateTo("/menu");
             }
             else
