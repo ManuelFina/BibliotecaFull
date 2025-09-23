@@ -36,7 +36,7 @@ namespace PracticoBiblioteca.API.Controllers
 
         [HttpGet("usuario/{usuarioId}")]
         [Authorize(Roles = "Admin,Cliente")]
-        public async Task<ActionResult<IEnumerable<Prestamo>>> ObtenerPorUsuario(string usuarioId)
+        public async Task<ActionResult<IEnumerable<Prestamo>>> ObtenerPorUsuario(int usuarioId)
         {
             var prestamos = await _prestamoRepo.ObtenerPorUsuarioAsync(usuarioId);
             return Ok(prestamos);
@@ -55,10 +55,11 @@ namespace PracticoBiblioteca.API.Controllers
             if (usuarioIdClaim == null)
                 return Unauthorized("No se pudo determinar el usuario autenticado.");
 
-            // Aquí tu UsuarioId es string, asignamos directamente
-            prestamo.UsuarioId = usuarioIdClaim;
+            if (!int.TryParse(usuarioIdClaim, out var usuarioId))
+                return Unauthorized("El claim de usuario no es válido.");
 
-            // 🔹 Validar si ya tiene un préstamo activo del mismo libro
+            prestamo.UsuarioId = usuarioId;
+
             var prestamosUsuario = await _prestamoRepo.ObtenerPorUsuarioAsync(prestamo.UsuarioId);
 
             var yaTienePrestamo = prestamosUsuario
@@ -67,11 +68,9 @@ namespace PracticoBiblioteca.API.Controllers
             if (yaTienePrestamo)
                 return BadRequest("Ya tienes un préstamo activo de este libro.");
 
-            // 🔹 Asignar valores por defecto
             prestamo.FechaPrestamo = DateTime.Now;
             prestamo.Estado = "Pendiente";
 
-            // 💾 Guardar el nuevo préstamo
             var nuevoPrestamo = await _prestamoRepo.AgregarAsync(prestamo);
 
             return CreatedAtAction(nameof(ObtenerPorId), new { id = nuevoPrestamo.Id }, nuevoPrestamo);

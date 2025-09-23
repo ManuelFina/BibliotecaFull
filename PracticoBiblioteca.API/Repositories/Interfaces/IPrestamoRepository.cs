@@ -6,7 +6,7 @@ namespace PracticoBiblioteca.API.Repositories.Interfaces
     {
         Task<IEnumerable<Prestamo>> ObtenerTodosAsync();
         Task<Prestamo?> ObtenerPorIdAsync(int id);
-        Task<IEnumerable<Prestamo>> ObtenerPorUsuarioAsync(string usuarioId);
+        Task<IEnumerable<Prestamo>> ObtenerPorUsuarioAsync(int usuarioId);
         Task<Prestamo> AgregarAsync(Prestamo prestamo);
         Task EditarAsync(Prestamo prestamo);
         Task EliminarAsync(int id);

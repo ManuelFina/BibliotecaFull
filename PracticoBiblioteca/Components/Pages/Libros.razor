@@ -1,5 +1,7 @@
 ﻿@page "/libros"
 @inject ILibroService LibroService
+@inject IPrestamoService PrestamoService
+@inject IUsuarioService UsuarioService
 @inject NavigationManager Nav
 
 <h3 class="mb-4">Gestión de Libros</h3>
@@ -8,9 +10,12 @@
     <i class="bi bi-arrow-left-circle me-1"></i> Volver atrás
 </button>
 
-<button class="btn btn-success mb-3" @onclick="NuevoLibro">
-    <i class="bi bi-plus-circle me-1"></i> Agregar libro
-</button>
+@if (EsAdmin)
+{
+    <button class="btn btn-success mb-3" @onclick="NuevoLibro">
+        <i class="bi bi-plus-circle me-1"></i> Agregar libro
+    </button>
+}
 
 @if (libros.Count == 0)
 {
@@ -30,8 +35,16 @@ else
                             <strong>Autor:</strong> @libro.Autor<br />
                             <strong>Año:</strong> @libro.AñoPublicacion
                         </p>
-                        <button class="btn btn-warning btn-sm me-2" @onclick="() => EditarLibro(libro.Id)">Editar</button>
-                        <button class="btn btn-danger btn-sm" @onclick="() => EliminarLibro(libro.Id)">Eliminar</button>
+
+                        @if (EsAdmin)
+                        {
+                            <button class="btn btn-warning btn-sm me-2" @onclick="() => EditarLibro(libro.Id)">Editar</button>
+                            <button class="btn btn-danger btn-sm" @onclick="() => EliminarLibro(libro.Id)">Eliminar</button>
+                        }
+                        else if (EsCliente)
+                        {
+                            <button class="btn btn-primary btn-sm" @onclick="() => PedirPrestamo(libro.Id)">Pedir préstamo</button>
+                        }
                     </div>
                 </div>
             </div>
@@ -41,15 +54,28 @@ else
 
 @code {
     private List<Libro> libros = new();
+    private SesionDTO? sesion;
 
-    protected override void OnInitialized()
+    private bool EsAdmin => sesion?.Rol == "Admin";
+    private bool EsCliente => sesion?.Rol == "Cliente";
+
+    protected override async Task OnInitializedAsync()
     {
-        libros = LibroService.ObtenerTodos();
+        // Cargamos sesión desde almacenamiento/localstorage o API
+        // Supongamos que UsuarioService nos trae la sesión actual (ajustalo según tu implementación)
+        sesion = await UsuarioService.AutenticacionAsync(new LoginDTO
+        {
+            // acá pondrías la forma en que guardás al usuario logueado
+            Email = "demo",
+            Password = "demo"
+        });
+
+        libros = await LibroService.ObtenerTodos();
     }
 
     private void NuevoLibro()
     {
-        Nav.NavigateTo("/libroform/0"); 
+        Nav.NavigateTo("/libroform/0");
     }
 
     private void EditarLibro(int id)
@@ -57,10 +83,19 @@ else
         Nav.NavigateTo($"/libroform/{id}");
     }
 
-    private void EliminarLibro(int id)
+    private async Task EliminarLibro(int id)
     {
-        LibroService.Eliminar(id);
-        libros = LibroService.ObtenerTodos();
+        await Task.Run(() => LibroService.Eliminar(id));
+        libros = await LibroService.ObtenerTodos();
+    }
+
+    private async Task PedirPrestamo(int libroId)
+    {
+        if (sesion is null) return;
+
+        await Task.Run(() => PrestamoService.SolicitarPrestamo(libroId, sesion.UsuarioId));
+        // Opcional: mostrar alerta o navegar a "Mis préstamos"
+        Console.WriteLine($"Préstamo solicitado: Libro {libroId} por Usuario {sesion.UsuarioId}");
     }
 
     private void VolverAtras()

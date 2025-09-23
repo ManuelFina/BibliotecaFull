@@ -36,7 +36,9 @@ namespace PracticoBiblioteca.API.Repositories.Implementaciones
                 {
                     Token = Guid.NewGuid().ToString(), // luego reemplazar por JWT
                     Expiracion = DateTime.Now.AddHours(24),
-                    Email = usuario.Email
+                    Email = usuario.Email,
+                    UsuarioId = usuario.Id,
+                    Rol = "cliente"
                 };
             }
             catch (Exception ex)
