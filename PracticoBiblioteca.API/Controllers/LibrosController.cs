@@ -7,11 +7,11 @@ namespace PracticoBiblioteca.API.Controllers
 {
     [ApiController]
     [Route("api/[controller]")]
-    public class LibroController : ControllerBase
+    public class LibrosController : ControllerBase
     {
         private readonly ILibroRepository _libroRepository;
 
-        public LibroController(ILibroRepository libroRepository)
+        public LibrosController(ILibroRepository libroRepository)
         {
             _libroRepository = libroRepository;
         }

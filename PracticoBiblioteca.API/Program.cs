@@ -29,11 +29,6 @@ builder.Services.AddCors(options =>
 });
 
 
-builder.Services.AddAuthorizationBuilder()
-    .AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"))
-    .AddPolicy("ClientePolicy", policy => policy.RequireRole("Cliente"));
-
-
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -42,6 +37,9 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
+app.UseHttpsRedirection();
+app.UseAuthorization();
+app.MapControllers();
 app.UseHttpsRedirection();
 
 app.Run();
