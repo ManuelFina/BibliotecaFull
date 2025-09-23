@@ -28,7 +28,8 @@ else
         {
             <div class="col">
                 <div class="card h-100 shadow-sm">
-                    <img src="@libro.Imagen" class="card-img-top" alt="Portada" style="height: 250px; object-fit: cover;" />
+                    <img src="@libro.Imagen" class="card-img-top" alt="Portada"
+                         style="height: 250px; object-fit: cover;" />
                     <div class="card-body">
                         <h5 class="card-title">@libro.Titulo</h5>
                         <p class="card-text">
@@ -38,12 +39,21 @@ else
 
                         @if (EsAdmin)
                         {
-                            <button class="btn btn-warning btn-sm me-2" @onclick="() => EditarLibro(libro.Id)">Editar</button>
-                            <button class="btn btn-danger btn-sm" @onclick="() => EliminarLibro(libro.Id)">Eliminar</button>
+                            <button class="btn btn-warning btn-sm me-2"
+                                    @onclick="() => EditarLibro(libro.Id)">
+                                Editar
+                            </button>
+                            <button class="btn btn-danger btn-sm"
+                                    @onclick="() => EliminarLibro(libro.Id)">
+                                Eliminar
+                            </button>
                         }
                         else if (EsCliente)
                         {
-                            <button class="btn btn-primary btn-sm" @onclick="() => PedirPrestamo(libro.Id)">Pedir préstamo</button>
+                            <button class="btn btn-primary btn-sm"
+                                    @onclick="() => PedirPrestamo(libro.Id)">
+                                Pedir préstamo
+                            </button>
                         }
                     </div>
                 </div>
@@ -61,11 +71,9 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        // Cargamos sesión desde almacenamiento/localstorage o API
-        // Supongamos que UsuarioService nos trae la sesión actual (ajustalo según tu implementación)
+        // Ejemplo de carga de sesión (ajustalo a tu lógica real)
         sesion = await UsuarioService.AutenticacionAsync(new LoginDTO
         {
-            // acá pondrías la forma en que guardás al usuario logueado
             Email = "demo",
             Password = "demo"
         });
@@ -85,7 +93,7 @@ else
 
     private async Task EliminarLibro(int id)
     {
-        await Task.Run(() => LibroService.Eliminar(id));
+        await LibroService.Eliminar(id);
         libros = await LibroService.ObtenerTodos();
     }
 
@@ -93,8 +101,8 @@ else
     {
         if (sesion is null) return;
 
-        await Task.Run(() => PrestamoService.SolicitarPrestamo(libroId, sesion.UsuarioId));
-        // Opcional: mostrar alerta o navegar a "Mis préstamos"
+        await PrestamoService.SolicitarPrestamo(libroId, sesion.UsuarioId);
+        // Opcional: notificación visual
         Console.WriteLine($"Préstamo solicitado: Libro {libroId} por Usuario {sesion.UsuarioId}");
     }
 

@@ -1,39 +1,76 @@
 ﻿@page "/usuarios"
 @inject IUsuarioService UsuarioService
 @inject NavigationManager Navigation
+@inject ISesionService SesionService  <!-- servicio que maneja la sesión -->
 
 <h3 class="mb-4">Gestión de Usuarios</h3>
 
-<button class="btn btn-success mb-3" @onclick="Volver">
-    <i class="bi bi-arrow-left-circle me-1"></i> Volver al menú
-</button>
-
-<button class="btn btn-success mb-3" @onclick="NuevoUsuario">
-    <i class="bi bi-person-plus me-1"></i> Agregar usuario
-</button>
-
-@if (usuarios.Count == 0)
+@if (sesion is null)
 {
-    <div class="alert alert-info">No hay usuarios registrados.</div>
+    <div class="alert alert-warning">
+        No has iniciado sesión. <a href="/login">Inicia sesión aquí</a>.
+    </div>
 }
-else
+else if (sesion.Rol == "Cliente")
 {
-    <div class="row row-cols-1 row-cols-md-3 g-4">
-        @foreach (var usuario in usuarios)
-        {
-            <div class="col">
-                <div class="card h-100 shadow-sm">
-                    <img src="@usuario.Imagen" class="card-img-top" alt="Foto usuario" style="height: 250px; object-fit: cover;" />
-                    <div class="card-body">
-                        <h5 class="card-title">@usuario.Nombre</h5>
-                        <p class="card-text"><strong>Email:</strong> @usuario.Email</p>
-                        <button class="btn btn-warning btn-sm me-2" @onclick="() => EditarUsuario(usuario.Id)">Editar</button>
-                        <button class="btn btn-danger btn-sm" @onclick="() => ConfirmarEliminar(usuario.Id, usuario.Nombre)">Eliminar</button>
+    <!-- Vista para clientes: solo registrarse -->
+    <h5>Registro de Cliente</h5>
+    <EditForm Model="nuevoCliente" OnValidSubmit="RegistrarCliente">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="mb-3">
+            <label class="form-label">Nombre</label>
+            <InputText class="form-control" @bind-Value="nuevoCliente.Nombre" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Email</label>
+            <InputText class="form-control" @bind-Value="nuevoCliente.Email" />
+        </div>
+
+        <div class="mb-3">
+            <label class="form-label">Contraseña</label>
+            <InputText type="password" class="form-control" @bind-Value="nuevoCliente.Password" />
+        </div>
+
+        <button type="submit" class="btn btn-success">
+            <i class="bi bi-person-plus me-1"></i> Registrarse
+        </button>
+    </EditForm>
+}
+else if (sesion.Rol == "Admin")
+{
+    <!-- Vista para administradores: CRUD -->
+    <button class="btn btn-success mb-3" @onclick="NuevoUsuario">
+        <i class="bi bi-person-plus me-1"></i> Agregar usuario
+    </button>
+
+    @if (usuarios.Count == 0)
+    {
+        <div class="alert alert-info">No hay usuarios registrados.</div>
+    }
+    else
+    {
+        <div class="row row-cols-1 row-cols-md-3 g-4">
+            @foreach (var usuario in usuarios)
+            {
+                <div class="col">
+                    <div class="card h-100 shadow-sm">
+                        <img src="@usuario.Imagen" class="card-img-top" alt="Foto usuario"
+                             style="height: 250px; object-fit: cover;" />
+                        <div class="card-body">
+                            <h5 class="card-title">@usuario.Nombre</h5>
+                            <p class="card-text"><strong>Email:</strong> @usuario.Email</p>
+                            <p class="card-text"><strong>Rol:</strong> @usuario.Rol</p>
+                            <button class="btn btn-warning btn-sm me-2" @onclick="() => EditarUsuario(usuario.Id)">Editar</button>
+                            <button class="btn btn-danger btn-sm" @onclick="() => ConfirmarEliminar(usuario.Id, usuario.Nombre)">Eliminar</button>
+                        </div>
                     </div>
                 </div>
-            </div>
-        }
-    </div>
+            }
+        </div>
+    }
 }
 
 @if (mostrarModal)
@@ -62,10 +99,28 @@ else
     private bool mostrarModal = false;
     private int usuarioAEliminarId;
     private string usuarioAEliminarNombre = string.Empty;
+    private SesionDTO? sesion;
 
-    protected override void OnInitialized()
+    // Para registro de cliente
+    private RegistroDTO nuevoCliente = new();
+
+    protected override async Task OnInitializedAsync()
     {
-        usuarios = UsuarioService.ObtenerTodos();
+        sesion = await SesionService.ObtenerSesionAsync();
+
+        if (sesion?.Rol == "Admin")
+        {
+            usuarios = await UsuarioService.ObtenerTodosAsync();
+        }
+    }
+
+    private async Task RegistrarCliente()
+    {
+        var result = await UsuarioService.RegistrarAsync(nuevoCliente);
+        if (result != null)
+        {
+            Navigation.NavigateTo("/menu");
+        }
     }
 
     private void NuevoUsuario()
@@ -90,15 +145,10 @@ else
         mostrarModal = false;
     }
 
-    private void EliminarConfirmado()
+    private async Task EliminarConfirmado()
     {
-        UsuarioService.Eliminar(usuarioAEliminarId);
-        usuarios = UsuarioService.ObtenerTodos();
+        await UsuarioService.EliminarAsync(usuarioAEliminarId);
+        usuarios = await UsuarioService.ObtenerTodosAsync();
         mostrarModal = false;
-    }
-
-    private void Volver()
-    {
-        Navigation.NavigateTo("/menu");
     }
 }

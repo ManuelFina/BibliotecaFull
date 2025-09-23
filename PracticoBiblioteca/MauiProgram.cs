@@ -33,6 +33,10 @@ namespace PracticoBiblioteca
 
             builder.Services.AddSingleton<ILibroService, LibroService>();
             builder.Services.AddSingleton<IUsuarioService, UsuarioService>();
+            builder.Services.AddSingleton<ISesionService, SesionService>();
+            builder.Services.AddSingleton<IPrestamoService, PrestamoService>();
+
+
 
 #if DEBUG
             builder.Services.AddBlazorWebViewDeveloperTools();

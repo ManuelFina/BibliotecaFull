@@ -41,7 +41,7 @@ public class LibroService : ILibroService
         }
     }
 
-    public async void Agregar(Libro libro)
+    public async Task Agregar(Libro libro)
     {
         try
         {
@@ -54,7 +54,7 @@ public class LibroService : ILibroService
         }
     }
 
-    public async void Actualizar(Libro libro)
+    public async Task Actualizar(Libro libro)
     {
         try
         {
@@ -67,7 +67,7 @@ public class LibroService : ILibroService
         }
     }
 
-    public async void Eliminar(int id)
+    public async Task Eliminar(int id)
     {
         try
         {

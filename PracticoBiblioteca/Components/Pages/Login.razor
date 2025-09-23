@@ -1,5 +1,6 @@
 ﻿@page "/"
 @inject IUsuarioService UsuarioService
+@inject ISesionService SesionService
 @inject NavigationManager Nav
 
 <div class="container mt-5">
@@ -29,7 +30,7 @@
                         <input id="clave" @bind="clave" type="password" class="form-control" placeholder="Ingrese su contraseña" />
                     </div>
 
-                    <button class="btn btn-primary w-100" @onclick="IniciarSesion">
+                    <button class="btn btn-primary w-100" @onclick="IniciarSesionAsync">
                         <i class="bi bi-box-arrow-in-right me-1"></i> Iniciar sesión
                     </button>
 
@@ -50,16 +51,32 @@
     private string clave = "";
     private string errorMensaje = "";
 
-    private void IniciarSesion()
+    private async Task IniciarSesionAsync()
     {
-        var user = UsuarioService.ObtenerPorCredenciales(email, clave);
-        if (user != null)
+        errorMensaje = "";
+
+        try
         {
-            Nav.NavigateTo("/menu");
+            var sesion = await UsuarioService.AutenticacionAsync(new Shared.DTOs.LoginDTO
+            {
+                Email = email,
+                Password = clave
+            });
+
+            if (sesion != null)
+            {
+                await SesionService.GuardarSesionAsync(sesion);
+                Nav.NavigateTo("/menu");
+            }
+            else
+            {
+                errorMensaje = "Correo o contraseña incorrectos.";
+            }
         }
-        else
+        catch (Exception ex)
         {
-            errorMensaje = "Correo o contraseña incorrectos.";
+            errorMensaje = "Ocurrió un error al iniciar sesión.";
+            Console.WriteLine(ex.Message);
         }
     }
 }

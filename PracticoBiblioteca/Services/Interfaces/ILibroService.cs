@@ -7,7 +7,7 @@ public interface ILibroService
 {
     Task <List<Libro>> ObtenerTodos();
     Task <Libro?> ObtenerPorId(int id);
-    void Agregar(Libro libro);
-    void Actualizar(Libro libro);
-    void Eliminar(int id);
+    Task Agregar(Libro libro);
+    Task Actualizar(Libro libro);
+    Task Eliminar(int id);
 }

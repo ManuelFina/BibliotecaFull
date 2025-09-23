@@ -29,7 +29,7 @@ public class PrestamoService : IPrestamoService
         }
     }
 
-    public async Task<List<Prestamo>> ObtenerPorUsuario(string usuarioId)
+    public async Task<List<Prestamo>> ObtenerPorUsuario(int usuarioId)
     {
         try
         {
@@ -54,7 +54,7 @@ public class PrestamoService : IPrestamoService
         }
     }
 
-    public async void SolicitarPrestamo(int libroId, string usuarioId)
+    public async Task SolicitarPrestamo(int libroId, int usuarioId)
     {
         try
         {
@@ -67,7 +67,7 @@ public class PrestamoService : IPrestamoService
         }
     }
 
-    public async void AprobarPrestamo(int id)
+    public async Task AprobarPrestamo(int id)
     {
         try
         {
@@ -80,7 +80,7 @@ public class PrestamoService : IPrestamoService
         }
     }
 
-    public async void DevolverPrestamo(int id)
+    public async Task DevolverPrestamo(int id)
     {
         try
         {
@@ -93,7 +93,7 @@ public class PrestamoService : IPrestamoService
         }
     }
 
-    public async void Eliminar(int id)
+    public async Task Eliminar(int id)
     {
         try
         {
