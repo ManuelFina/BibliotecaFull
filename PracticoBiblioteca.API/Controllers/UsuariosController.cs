@@ -45,7 +45,6 @@ namespace PracticoBiblioteca.API.Controllers
 
         // GET: api/usuarios
         [HttpGet]
-        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<IEnumerable<Usuario>>> GetUsuarios()
         {
             try
@@ -61,7 +60,6 @@ namespace PracticoBiblioteca.API.Controllers
 
         // GET: api/usuarios/5
         [HttpGet("{id}")]
-        [Authorize(Roles = "Admin")]
         public async Task<ActionResult<Usuario>> GetUsuario(int id)
         {
             var usuario = await _usuarioRepository.ObtenerPorIdAsync(id);
@@ -73,7 +71,6 @@ namespace PracticoBiblioteca.API.Controllers
 
         // POST: api/usuarios
         [HttpPost]
-        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> PostUsuario([FromBody] Usuario usuario)
         {
             await _usuarioRepository.AgregarAsync(usuario);
@@ -82,7 +79,6 @@ namespace PracticoBiblioteca.API.Controllers
 
         // PUT: api/usuarios/5
         [HttpPut("{id}")]
-        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> PutUsuario(int id, [FromBody] Usuario usuario)
         {
             if (id != usuario.Id)
@@ -94,7 +90,6 @@ namespace PracticoBiblioteca.API.Controllers
 
         // DELETE: api/usuarios/5
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> DeleteUsuario(int id)
         {
             await _usuarioRepository.EliminarAsync(id);

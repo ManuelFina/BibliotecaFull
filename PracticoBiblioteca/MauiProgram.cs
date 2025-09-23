@@ -31,11 +31,8 @@ namespace PracticoBiblioteca
 
             //cambiar inyeccion de dependencias por scopped
 
-            builder.Services.AddSingleton<ILibroService, LibroService>();
-            builder.Services.AddSingleton<IUsuarioService, UsuarioService>();
-            builder.Services.AddSingleton<ISesionService, SesionService>();
-            builder.Services.AddSingleton<IPrestamoService, PrestamoService>();
-
+            builder.Services.AddScoped<ILibroService, LibroService>();
+            builder.Services.AddScoped<IUsuarioService, UsuarioService>();
 
 
 #if DEBUG

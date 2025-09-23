@@ -28,13 +28,12 @@ namespace PracticoBiblioteca.API.Repositories.Implementaciones
 
                 if (usuario == null) return null;
 
-                // Verificar hash
                 bool claveValida = BCrypt.Net.BCrypt.Verify(login.Password, usuario.Clave);
                 if (!claveValida) return null;
 
                 return new SesionDTO
                 {
-                    Token = Guid.NewGuid().ToString(), // luego reemplazar por JWT
+                    Token = Guid.NewGuid().ToString(),
                     Expiracion = DateTime.Now.AddHours(24),
                     Email = usuario.Email,
                     UsuarioId = usuario.Id,
@@ -47,35 +46,6 @@ namespace PracticoBiblioteca.API.Repositories.Implementaciones
                 throw;
             }
         }
-        public async Task<Usuario?> RegistrarAsync(RegistroDTO registroDto)
-        {
-            try
-            {
-                var existente = await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == registroDto.Email);
-                if (existente != null) return null;
-
-                var hashedClave = BCrypt.Net.BCrypt.HashPassword(registroDto.Clave);
-
-                var usuario = new Usuario
-                {
-                    Nombre = registroDto.Nombre,
-                    Email = registroDto.Email,
-                    Clave = hashedClave,
-                    Rol = registroDto.Rol ?? "Cliente",
-                    Activo = true
-                };
-
-                _context.Usuarios.Add(usuario);
-                await _context.SaveChangesAsync();
-
-                return usuario;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error al registrar usuario");
-                throw;
-            }
-        }
 
         public async Task<List<Usuario>> ObtenerTodosAsync()
         {
@@ -85,11 +55,6 @@ namespace PracticoBiblioteca.API.Repositories.Implementaciones
         public async Task<Usuario?> ObtenerPorIdAsync(int id)
         {
             return await _context.Usuarios.FindAsync(id);
-        }
-
-        public async Task<Usuario?> ObtenerPorEmailAsync(string email)
-        {
-            return await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == email);
         }
 
         public async Task AgregarAsync(Usuario usuario)

@@ -6,8 +6,6 @@ namespace PracticoBiblioteca.API.Repositories.Interfaces
     public interface IUsuarioRepository
     {
         Task<SesionDTO?> AutenticacionAsync(LoginDTO login);
-        Task<Usuario?> RegistrarAsync(RegistroDTO registroDto);
-        Task<Usuario?> ObtenerPorEmailAsync(string email);
         Task<List<Usuario>> ObtenerTodosAsync();
         Task<Usuario?> ObtenerPorIdAsync(int id);
         Task AgregarAsync(Usuario usuario);
