@@ -12,6 +12,4 @@ public class Libro
     public string Imagen { get; set; } = string.Empty;
     public int AñoPublicacion { get; set; }
 
-    // Relación con Prestamos
-    public List<Prestamo> Prestamos { get; set; } = new();
 }

@@ -12,6 +12,5 @@ namespace PracticoBiblioteca.Shared.DTOs
         public required DateTime Expiracion { get; set; } = DateTime.Now.AddHours(24);
         public required string Email { get; set; } = string.Empty;
         public required string Rol { get; set; } = "Cliente";
-        public required int UsuarioId { get; set; }
     }
 }

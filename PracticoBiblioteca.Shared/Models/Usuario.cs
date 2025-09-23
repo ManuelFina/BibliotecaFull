@@ -22,8 +22,5 @@ namespace PracticoBiblioteca.Shared.Models
         [Required]
         public bool Activo { get; set; }
         public string Imagen { get; set; } = string.Empty;
-
-        // Relación con Préstamos
-        public List<Prestamo> Prestamos { get; set; } = [];
     }
 }
