@@ -33,21 +33,6 @@ public class UsuarioService : IUsuarioService
             throw;
         }
     }
-    public async Task<Usuario?> RegistrarAsync(RegistroDTO registroDto)
-    {
-        try
-        {
-            var response = await _httpClient.PostAsJsonAsync("api/usuarios/register", registroDto);
-            if (!response.IsSuccessStatusCode) return null;
-
-            return await response.Content.ReadFromJsonAsync<Usuario>();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error al registrar usuario");
-            throw;
-        }
-    }
     public async Task<List<Usuario>> ObtenerTodosAsync()
     {
         try

@@ -2,9 +2,9 @@
 @inject ILibroService LibroService
 @inject NavigationManager Nav
 
-<h3 class="mb-4">@(libroEditando.Id == 0 ? "Nuevo Libro" : "Editar Libro")</h3>
+<h3 class="mb-4">@((libroEditando.Id == 0) ? "Nuevo Libro" : "Editar Libro")</h3>
 
-<EditForm Model="libroEditando" OnValidSubmit="GuardarLibro">
+<EditForm Model="libroEditando" OnValidSubmit="GuardarLibroAsync">
     <DataAnnotationsValidator />
     <ValidationSummary />
 
@@ -40,11 +40,12 @@
     [Parameter] public int Id { get; set; }
     private Libro libroEditando = new();
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         if (Id != 0)
         {
-            var libro = LibroService.ObtenerTodos().FirstOrDefault(l => l.Id == Id);
+            var todos = await LibroService.ObtenerTodos();
+            var libro = todos.FirstOrDefault(l => l.Id == Id);
             if (libro != null)
             {
                 libroEditando = new Libro
@@ -59,12 +60,12 @@
         }
     }
 
-    private void GuardarLibro()
+    private async Task GuardarLibroAsync()
     {
         if (libroEditando.Id == 0)
-            LibroService.Agregar(libroEditando);
+            await LibroService.Agregar(libroEditando);
         else
-            LibroService.Actualizar(libroEditando);
+            await LibroService.Actualizar(libroEditando);
 
         Nav.NavigateTo("/libros");
     }

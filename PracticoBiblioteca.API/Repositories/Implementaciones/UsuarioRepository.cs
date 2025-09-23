@@ -36,7 +36,6 @@ namespace PracticoBiblioteca.API.Repositories.Implementaciones
                     Token = Guid.NewGuid().ToString(),
                     Expiracion = DateTime.Now.AddHours(24),
                     Email = usuario.Email,
-                    UsuarioId = usuario.Id,
                     Rol = "cliente"
                 };
             }

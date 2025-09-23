@@ -33,6 +33,8 @@ namespace PracticoBiblioteca
 
             builder.Services.AddScoped<ILibroService, LibroService>();
             builder.Services.AddScoped<IUsuarioService, UsuarioService>();
+            builder.Services.AddScoped<ISesionService, SesionService>();
+
 
 
 #if DEBUG

@@ -2,9 +2,9 @@
 @inject IUsuarioService UsuarioService
 @inject NavigationManager Navigation
 
-<h3 class="mb-4">@(usuarioEditando.Id == 0 ? "Nuevo Usuario" : "Editar Usuario")</h3>
+<h3 class="mb-4">@((usuarioEditando.Id == 0) ? "Nuevo Usuario" : "Editar Usuario")</h3>
 
-<EditForm Model="usuarioEditando" OnValidSubmit="GuardarUsuario">
+<EditForm Model="usuarioEditando" OnValidSubmit="GuardarUsuarioAsync">
     <DataAnnotationsValidator />
     <ValidationSummary />
 
@@ -40,11 +40,12 @@
     [Parameter] public int Id { get; set; }
     private Usuario usuarioEditando = new();
 
-    protected override void OnInitialized()
+    protected override async Task OnInitializedAsync()
     {
         if (Id != 0)
         {
-            var usuario = UsuarioService.ObtenerTodos().FirstOrDefault(u => u.Id == Id);
+            var todos = await UsuarioService.ObtenerTodosAsync();
+            var usuario = todos.FirstOrDefault(u => u.Id == Id);
             if (usuario != null)
             {
                 usuarioEditando = new Usuario
@@ -59,12 +60,12 @@
         }
     }
 
-    private void GuardarUsuario()
+    private async Task GuardarUsuarioAsync()
     {
         if (usuarioEditando.Id == 0)
-            UsuarioService.Agregar(usuarioEditando);
+            await UsuarioService.AgregarAsync(usuarioEditando);
         else
-            UsuarioService.Actualizar(usuarioEditando);
+            await UsuarioService.ActualizarAsync(usuarioEditando);
 
         Navigation.NavigateTo("/usuarios");
     }

@@ -1,47 +1,18 @@
 ﻿@page "/usuarios"
 @inject IUsuarioService UsuarioService
+@inject ISesionService SesionService
 @inject NavigationManager Navigation
-@inject ISesionService SesionService  <!-- servicio que maneja la sesión -->
 
 <h3 class="mb-4">Gestión de Usuarios</h3>
 
-@if (sesion is null)
+@if (sesion == null)
 {
     <div class="alert alert-warning">
         No has iniciado sesión. <a href="/login">Inicia sesión aquí</a>.
     </div>
 }
-else if (sesion.Rol == "Cliente")
-{
-    <!-- Vista para clientes: solo registrarse -->
-    <h5>Registro de Cliente</h5>
-    <EditForm Model="nuevoCliente" OnValidSubmit="RegistrarCliente">
-        <DataAnnotationsValidator />
-        <ValidationSummary />
-
-        <div class="mb-3">
-            <label class="form-label">Nombre</label>
-            <InputText class="form-control" @bind-Value="nuevoCliente.Nombre" />
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Email</label>
-            <InputText class="form-control" @bind-Value="nuevoCliente.Email" />
-        </div>
-
-        <div class="mb-3">
-            <label class="form-label">Contraseña</label>
-            <InputText type="password" class="form-control" @bind-Value="nuevoCliente.Password" />
-        </div>
-
-        <button type="submit" class="btn btn-success">
-            <i class="bi bi-person-plus me-1"></i> Registrarse
-        </button>
-    </EditForm>
-}
 else if (sesion.Rol == "Admin")
 {
-    <!-- Vista para administradores: CRUD -->
     <button class="btn btn-success mb-3" @onclick="NuevoUsuario">
         <i class="bi bi-person-plus me-1"></i> Agregar usuario
     </button>
@@ -96,13 +67,10 @@ else if (sesion.Rol == "Admin")
 
 @code {
     private List<Usuario> usuarios = new();
+    private SesionDTO? sesion;
     private bool mostrarModal = false;
     private int usuarioAEliminarId;
     private string usuarioAEliminarNombre = string.Empty;
-    private SesionDTO? sesion;
-
-    // Para registro de cliente
-    private RegistroDTO nuevoCliente = new();
 
     protected override async Task OnInitializedAsync()
     {
@@ -114,24 +82,9 @@ else if (sesion.Rol == "Admin")
         }
     }
 
-    private async Task RegistrarCliente()
-    {
-        var result = await UsuarioService.RegistrarAsync(nuevoCliente);
-        if (result != null)
-        {
-            Navigation.NavigateTo("/menu");
-        }
-    }
+    private void NuevoUsuario() => Navigation.NavigateTo("/usuarioform/0");
 
-    private void NuevoUsuario()
-    {
-        Navigation.NavigateTo("/usuarioform/0"); 
-    }
-
-    private void EditarUsuario(int id)
-    {
-        Navigation.NavigateTo($"/usuarioform/{id}");
-    }
+    private void EditarUsuario(int id) => Navigation.NavigateTo($"/usuarioform/{id}");
 
     private void ConfirmarEliminar(int id, string nombre)
     {
@@ -140,10 +93,7 @@ else if (sesion.Rol == "Admin")
         mostrarModal = true;
     }
 
-    private void CerrarModal()
-    {
-        mostrarModal = false;
-    }
+    private void CerrarModal() => mostrarModal = false;
 
     private async Task EliminarConfirmado()
     {
