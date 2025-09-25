@@ -1,7 +1,8 @@
-using PracticoBiblioteca.API.Data;
 using Microsoft.EntityFrameworkCore;
-using PracticoBiblioteca.API.Repositories.Interfaces;
+using PracticoBiblioteca.API.CloudinaryConfig;
+using PracticoBiblioteca.API.Data;
 using PracticoBiblioteca.API.Repositories.Implementaciones;
+using PracticoBiblioteca.API.Repositories.Interfaces;
 
 
 var builder = WebApplication.CreateBuilder(args);
@@ -13,6 +14,11 @@ builder.Services.AddDbContext<DataContext>(opt =>
 
 builder.Services.AddScoped<ILibroRepository, LibroRepository>();
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+builder.Services.Configure<CloudinarySettings>(
+    builder.Configuration.GetSection("CloudinarySettings"));
+
+builder.Services.AddScoped<ICloudinaryRepository, CloudinaryRepository>();
+
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
