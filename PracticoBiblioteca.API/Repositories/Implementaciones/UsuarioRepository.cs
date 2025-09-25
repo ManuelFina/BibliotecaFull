@@ -1,10 +1,11 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using BCrypt.Net;
+using CloudinaryDotNet.Actions;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using PracticoBiblioteca.API.Data;
 using PracticoBiblioteca.API.Repositories.Interfaces;
 using PracticoBiblioteca.Shared.DTOs;
 using PracticoBiblioteca.Shared.Models;
-using BCrypt.Net;
 
 namespace PracticoBiblioteca.API.Repositories.Implementaciones
 {
@@ -36,7 +37,7 @@ namespace PracticoBiblioteca.API.Repositories.Implementaciones
                     Token = Guid.NewGuid().ToString(),
                     Expiracion = DateTime.Now.AddHours(24),
                     Email = usuario.Email,
-                    Rol = "cliente"
+                    Rol = usuario.Rol.ToString() 
                 };
             }
             catch (Exception ex)
@@ -45,6 +46,29 @@ namespace PracticoBiblioteca.API.Repositories.Implementaciones
                 throw;
             }
         }
+
+        public async Task<Usuario> RegistrarAsync(RegistroDTO dto)
+        {
+            var usuario = new Usuario
+            {
+                Nombre = dto.Nombre,
+                Email = dto.Email,
+                Clave = BCrypt.Net.BCrypt.HashPassword(dto.Password),
+                Rol = Roles.Cliente,
+                Activo = true
+            };
+
+            _context.Usuarios.Add(usuario);
+            await _context.SaveChangesAsync();
+            return usuario;
+
+        }
+
+        public async Task<bool> ExistePorEmailAsync(string email)
+        {
+            return await _context.Usuarios.AnyAsync(u => u.Email == email);
+        }
+
 
         public async Task<List<Usuario>> ObtenerTodosAsync()
         {

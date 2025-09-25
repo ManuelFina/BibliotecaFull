@@ -43,6 +43,28 @@ namespace PracticoBiblioteca.API.Controllers
             }
         }
 
+        [HttpPost("register")]
+        [AllowAnonymous]
+        public async Task<IActionResult> Registro(RegistroDTO dto)
+        {
+            var existe = await _usuarioRepository.ExistePorEmailAsync(dto.Email);
+            if (existe) return BadRequest("Ya existe un usuario con ese correo");
+
+            var usuario = new Usuario
+            {
+                Nombre = dto.Nombre,
+                Email = dto.Email,
+                Clave = BCrypt.Net.BCrypt.HashPassword(dto.Password),
+                Rol = Roles.Cliente, // siempre cliente
+                Activo = true
+            };
+
+            await _usuarioRepository.AgregarAsync(usuario);
+
+            return Ok("Usuario registrado exitosamente");
+        }
+
+
         // GET: api/usuarios
         [HttpGet]
         public async Task<ActionResult<IEnumerable<Usuario>>> GetUsuarios()

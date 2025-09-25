@@ -18,7 +18,7 @@ namespace PracticoBiblioteca.Shared.Models
         [Required]
         public string Clave { get; set; } = string.Empty;
         [Required]
-        public string? Rol { get; set; } = "Cliente";
+        public Roles Rol { get; set; } = Roles.Cliente; // Default Cliente
         [Required]
         public bool Activo { get; set; }
         public string Imagen { get; set; } = string.Empty;
