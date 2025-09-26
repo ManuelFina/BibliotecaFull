@@ -1,5 +1,6 @@
 ﻿@page "/libros"
 @inject ILibroService LibroService
+@inject IPrestamoService PrestamoService
 @inject ISesionService SesionService
 @inject NavigationManager Nav
 
@@ -47,6 +48,14 @@ else
                                 Eliminar
                             </button>
                         }
+
+                        @if (EsCliente)
+                        {
+                            <button class="btn btn-primary btn-sm mt-2"
+                                    @onclick="() => PedirPrestamo(libro.Id)">
+                                Solicitar Préstamo
+                            </button>
+                        }
                     </div>
                 </div>
             </div>
@@ -58,13 +67,12 @@ else
     private List<Libro> libros = new();
     private SesionDTO? sesion;
 
-    private bool EsAdmin => sesion?.Rol == "Admin";
+    private bool EsAdmin => string.Equals(sesion?.Rol, "Admin", StringComparison.OrdinalIgnoreCase);
+    private bool EsCliente => string.Equals(sesion?.Rol, "Cliente", StringComparison.OrdinalIgnoreCase);
 
     protected override async Task OnInitializedAsync()
     {
-        // Cargar sesión desde SesionService
-        sesion = await SesionService.ObtenerSesionAsync(); // ✅ Correcto
-
+        sesion = await SesionService.ObtenerSesionAsync();
         libros = await LibroService.ObtenerTodos();
     }
 
@@ -87,5 +95,21 @@ else
     private void VolverAtras()
     {
         Nav.NavigateTo("/menu");
+    }
+
+    private async Task PedirPrestamo(int libroId)
+    {
+        if (sesion == null) return;
+
+        var dto = new PrestamoDTO
+        {
+            UsuarioId = sesion.UsuarioId,         
+            LibroId = libroId,
+            FechaDevolucion = DateTime.Now.AddDays(7) 
+        };
+
+        await PrestamoService.CrearAsync(dto);
+
+        libros = await LibroService.ObtenerTodos();
     }
 }

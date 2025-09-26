@@ -8,8 +8,8 @@ namespace PracticoBiblioteca.Shared.DTOs
 {
     public class RegistroDTO
     {
-        public required string Nombre { get; set; }
-        public required string Email { get; set; }
-        public required string Password { get; set; }
+        public required string Nombre { get; set; } 
+        public required string Email { get; set; } 
+        public required string Password { get; set; } 
     }
 }

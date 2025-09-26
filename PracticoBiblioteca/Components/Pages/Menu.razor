@@ -1,32 +1,48 @@
 ﻿@page "/menu"
 @inject NavigationManager Navigation
+@inject SesionService SesionService
 
-<div class="d-flex flex-column p-3 bg-light border rounded" style="width: 250px;">
-    <h4 class="mb-4 text-center">
+<div class="d-flex flex-column p-3 bg-light border rounded shadow-sm" style="width: 260px;">
+    <h4 class="mb-4 text-center text-primary">
         <i class="bi bi-book-half me-2"></i> Biblioteca
     </h4>
 
-    <button class="btn btn-outline-primary mb-2 text-start" @onclick='() => NavegarA("/usuarios")'>
-        <i class="bi bi-people-fill me-2"></i> Usuarios
-    </button>
+    @if (usuarioEsAdmin)
+    {
+        <button class="btn btn-outline-primary mb-2 text-start fw-semibold" @onclick='() => NavegarA("/usuarios")'>
+            <i class="bi bi-people-fill me-2"></i> Usuarios
+        </button>
+    }
 
-    <button class="btn btn-outline-primary mb-2 text-start" @onclick='() => NavegarA("/libros")'>
+    <button class="btn btn-outline-primary mb-2 text-start fw-semibold" @onclick='() => NavegarA("/libros")'>
         <i class="bi bi-journal-bookmark-fill me-2"></i> Libros
     </button>
 
-    <button class="btn btn-outline-danger mt-4 text-start" @onclick="CerrarSesion">
+    <button class="btn btn-outline-primary mb-2 text-start fw-semibold" @onclick='() => NavegarA("/prestamos")'>
+        <i class="bi bi-box2-heart-fill me-2"></i> Préstamos
+    </button>
+
+    <hr />
+
+    <button class="btn btn-outline-danger mt-2 text-start fw-semibold" @onclick="CerrarSesion">
         <i class="bi bi-box-arrow-right me-2"></i> Cerrar sesión
     </button>
 </div>
 
 @code {
-    private void NavegarA(string ruta)
+    private bool usuarioEsAdmin;
+
+    protected override async Task OnInitializedAsync()
     {
-        Navigation.NavigateTo(ruta);
+        var sesion = await SesionService.ObtenerSesionAsync();
+        usuarioEsAdmin = string.Equals(sesion?.Rol, "Admin", StringComparison.OrdinalIgnoreCase);
     }
+
+    private void NavegarA(string ruta) => Navigation.NavigateTo(ruta);
 
     private void CerrarSesion()
     {
+        SesionService.CerrarSesion();
         Navigation.NavigateTo("/");
     }
 }
