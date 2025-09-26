@@ -2,6 +2,7 @@
 @inject IUsuarioService UsuarioService
 @inject ISesionService SesionService
 @inject NavigationManager Nav
+@inject NavigationManager Navigation
 
 <div class="container mt-5">
     <div class="row justify-content-center">
@@ -33,6 +34,9 @@
                     <button class="btn btn-primary w-100" @onclick="IniciarSesionAsync">
                         <i class="bi bi-box-arrow-in-right me-1"></i> Iniciar sesión
                     </button>
+                    <button class="btn btn-link mb-2 text-start fw-semibold p-0" @onclick='() => NavegarA("/registro")'>
+                    ¿No tienes cuenta? Regístrate aquí
+                    </button>
 
                     @if (!string.IsNullOrEmpty(errorMensaje))
                     {
@@ -50,6 +54,8 @@
     private string email = "";
     private string clave = "";
     private string errorMensaje = "";
+
+    private void NavegarA(string ruta) => Navigation.NavigateTo(ruta);
 
     private async Task IniciarSesionAsync()
     {

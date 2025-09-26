@@ -34,6 +34,7 @@ namespace PracticoBiblioteca.API.Repositories.Implementaciones
 
                 return new SesionDTO
                 {
+                    UsuarioId = usuario.Id,
                     Token = Guid.NewGuid().ToString(),
                     Expiracion = DateTime.Now.AddHours(24),
                     Email = usuario.Email,
