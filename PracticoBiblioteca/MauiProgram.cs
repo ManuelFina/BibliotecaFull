@@ -25,7 +25,7 @@ namespace PracticoBiblioteca
                 return new HttpClient
                 {
                     //BaseAddress = new Uri(navigationManager.BaseUri)
-                    BaseAddress = new Uri("https://localhost:7188")
+                    BaseAddress = new Uri("http://www.BibliotecaApp.somee.com")
                 };
             });
 
