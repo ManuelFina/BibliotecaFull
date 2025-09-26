@@ -14,6 +14,9 @@ builder.Services.AddDbContext<DataContext>(opt =>
 
 builder.Services.AddScoped<ILibroRepository, LibroRepository>();
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+builder.Services.AddScoped<IPrestamoRepository, PrestamoRepository>();
+
+
 builder.Services.Configure<CloudinarySettings>(
     builder.Configuration.GetSection("CloudinarySettings"));
 

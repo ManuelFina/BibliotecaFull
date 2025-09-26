@@ -51,6 +51,8 @@ namespace PracticoBiblioteca.API.Controllers
 
         // POST: api/Libro
         [HttpPost]
+        [Authorize(Roles = "Admin")]
+
         public async Task<ActionResult> Crear(Libro libro)
         {
             try
@@ -66,6 +68,8 @@ namespace PracticoBiblioteca.API.Controllers
 
         // PUT: api/Libro/5
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
+
         public async Task<ActionResult> Actualizar(int id, Libro libro)
         {
             try
@@ -84,6 +88,8 @@ namespace PracticoBiblioteca.API.Controllers
 
         // DELETE: api/Libro/5
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
+
         public async Task<ActionResult> Eliminar(int id)
         {
             try
