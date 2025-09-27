@@ -11,7 +11,7 @@
         No has iniciado sesión. <a href="/login">Inicia sesión aquí</a>.
     </div>
 }
-else if (sesion.Rol == "Admin")
+else if (usuarioEsAdmin)
 {
     <button class="btn btn-success mb-3" @onclick="NuevoUsuario">
         <i class="bi bi-person-plus me-1"></i> Agregar usuario
@@ -68,6 +68,7 @@ else if (sesion.Rol == "Admin")
 @code {
     private List<Usuario> usuarios = new();
     private SesionDTO? sesion;
+    private bool usuarioEsAdmin = false;
     private bool mostrarModal = false;
     private int usuarioAEliminarId;
     private string usuarioAEliminarNombre = string.Empty;
@@ -75,8 +76,9 @@ else if (sesion.Rol == "Admin")
     protected override async Task OnInitializedAsync()
     {
         sesion = await SesionService.ObtenerSesionAsync();
+        usuarioEsAdmin = string.Equals(sesion?.Rol, "Admin", StringComparison.OrdinalIgnoreCase);
 
-        if (sesion?.Rol == "Admin")
+        if (usuarioEsAdmin)
         {
             usuarios = await UsuarioService.ObtenerTodosAsync();
         }

@@ -21,7 +21,7 @@ public class UsuarioService : IUsuarioService
     {
         try
         {
-            var response = await _httpClient.PostAsJsonAsync("api/usuarios/authenticate", login);
+            var response = await _httpClient.PostAsJsonAsync("api/usuarios/Authenticate", login);
             response.EnsureSuccessStatusCode();
 
             var result = await response.Content.ReadFromJsonAsync<SesionDTO>();
@@ -33,6 +33,15 @@ public class UsuarioService : IUsuarioService
             throw;
         }
     }
+    public async Task<Usuario> RegistrarAsync(RegistroDTO dto)
+    {
+        var response = await _httpClient.PostAsJsonAsync("api/usuarios/register", dto);
+        response.EnsureSuccessStatusCode();
+
+        var usuario = await response.Content.ReadFromJsonAsync<Usuario>();
+        return usuario!;
+    }
+
     public async Task<List<Usuario>> ObtenerTodosAsync()
     {
         try

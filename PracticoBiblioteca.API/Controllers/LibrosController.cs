@@ -51,6 +51,7 @@ namespace PracticoBiblioteca.API.Controllers
 
         // POST: api/Libro
         [HttpPost]
+
         public async Task<ActionResult> Crear(Libro libro)
         {
             try
@@ -84,6 +85,7 @@ namespace PracticoBiblioteca.API.Controllers
 
         // DELETE: api/Libro/5
         [HttpDelete("{id}")]
+
         public async Task<ActionResult> Eliminar(int id)
         {
             try

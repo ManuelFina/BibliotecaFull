@@ -23,7 +23,6 @@ namespace PracticoBiblioteca.API.Controllers
         }
 
         [HttpPost("Authenticate")]
-        [AllowAnonymous]
         public async Task<IActionResult> Autenticacion([FromBody] LoginDTO login)
         {
             try
@@ -43,8 +42,29 @@ namespace PracticoBiblioteca.API.Controllers
             }
         }
 
+        [HttpPost("register")]
+        public async Task<IActionResult> Registro(RegistroDTO dto)
+        {
+            var existe = await _usuarioRepository.ExistePorEmailAsync(dto.Email);
+            if (existe) return BadRequest("Ya existe un usuario con ese correo");
+
+            var usuario = new Usuario
+            {
+                Nombre = dto.Nombre,
+                Email = dto.Email,
+                Clave = BCrypt.Net.BCrypt.HashPassword(dto.Password),
+                Rol = Roles.Cliente, // siempre cliente
+                Activo = true
+            };
+
+            await _usuarioRepository.AgregarAsync(usuario);
+
+            return Ok("Usuario registrado exitosamente");
+        }
+
         // GET: api/usuarios
         [HttpGet]
+
         public async Task<ActionResult<IEnumerable<Usuario>>> GetUsuarios()
         {
             try
@@ -60,6 +80,7 @@ namespace PracticoBiblioteca.API.Controllers
 
         // GET: api/usuarios/5
         [HttpGet("{id}")]
+
         public async Task<ActionResult<Usuario>> GetUsuario(int id)
         {
             var usuario = await _usuarioRepository.ObtenerPorIdAsync(id);
@@ -71,6 +92,7 @@ namespace PracticoBiblioteca.API.Controllers
 
         // POST: api/usuarios
         [HttpPost]
+
         public async Task<ActionResult> PostUsuario([FromBody] Usuario usuario)
         {
             await _usuarioRepository.AgregarAsync(usuario);
@@ -79,6 +101,7 @@ namespace PracticoBiblioteca.API.Controllers
 
         // PUT: api/usuarios/5
         [HttpPut("{id}")]
+
         public async Task<ActionResult> PutUsuario(int id, [FromBody] Usuario usuario)
         {
             if (id != usuario.Id)

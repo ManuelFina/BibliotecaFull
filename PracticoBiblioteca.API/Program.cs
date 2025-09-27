@@ -14,11 +14,17 @@ builder.Services.AddDbContext<DataContext>(opt =>
 
 builder.Services.AddScoped<ILibroRepository, LibroRepository>();
 builder.Services.AddScoped<IUsuarioRepository, UsuarioRepository>();
+builder.Services.AddScoped<IPrestamoRepository, PrestamoRepository>();
+
+
 builder.Services.Configure<CloudinarySettings>(
     builder.Configuration.GetSection("CloudinarySettings"));
 
 builder.Services.AddScoped<ICloudinaryRepository, CloudinaryRepository>();
 
+//para capturar errores de somee
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -46,7 +52,6 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();
-app.UseHttpsRedirection();
 
 app.Run();
 
