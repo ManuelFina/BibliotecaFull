@@ -21,7 +21,7 @@ public class UsuarioService : IUsuarioService
     {
         try
         {
-            var response = await _httpClient.PostAsJsonAsync("api/usuarios/authenticate", login);
+            var response = await _httpClient.PostAsJsonAsync("api/usuarios/Authenticate", login);
             response.EnsureSuccessStatusCode();
 
             var result = await response.Content.ReadFromJsonAsync<SesionDTO>();

@@ -23,7 +23,6 @@ namespace PracticoBiblioteca.API.Controllers
         }
 
         [HttpPost("Authenticate")]
-        [AllowAnonymous]
         public async Task<IActionResult> Autenticacion([FromBody] LoginDTO login)
         {
             try
@@ -44,7 +43,6 @@ namespace PracticoBiblioteca.API.Controllers
         }
 
         [HttpPost("register")]
-        [AllowAnonymous]
         public async Task<IActionResult> Registro(RegistroDTO dto)
         {
             var existe = await _usuarioRepository.ExistePorEmailAsync(dto.Email);
@@ -66,7 +64,6 @@ namespace PracticoBiblioteca.API.Controllers
 
         // GET: api/usuarios
         [HttpGet]
-        [Authorize(Roles = "Admin")]
 
         public async Task<ActionResult<IEnumerable<Usuario>>> GetUsuarios()
         {
@@ -83,7 +80,6 @@ namespace PracticoBiblioteca.API.Controllers
 
         // GET: api/usuarios/5
         [HttpGet("{id}")]
-        [Authorize(Roles = "Admin")]
 
         public async Task<ActionResult<Usuario>> GetUsuario(int id)
         {
@@ -96,7 +92,6 @@ namespace PracticoBiblioteca.API.Controllers
 
         // POST: api/usuarios
         [HttpPost]
-        [Authorize(Roles = "Admin")]
 
         public async Task<ActionResult> PostUsuario([FromBody] Usuario usuario)
         {
@@ -106,7 +101,6 @@ namespace PracticoBiblioteca.API.Controllers
 
         // PUT: api/usuarios/5
         [HttpPut("{id}")]
-        [Authorize(Roles = "Admin")]
 
         public async Task<ActionResult> PutUsuario(int id, [FromBody] Usuario usuario)
         {
@@ -119,7 +113,6 @@ namespace PracticoBiblioteca.API.Controllers
 
         // DELETE: api/usuarios/5
         [HttpDelete("{id}")]
-        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> DeleteUsuario(int id)
         {
             await _usuarioRepository.EliminarAsync(id);
