@@ -1,5 +1,4 @@
 ﻿@page "/"
-@inject IUsuarioService UsuarioService
 @inject ISesionService SesionService
 @inject NavigationManager Nav
 @inject NavigationManager Navigation
@@ -63,7 +62,7 @@
 
         try
         {
-            var sesion = await UsuarioService.AutenticacionAsync(new Shared.DTOs.LoginDTO
+            var sesion = await SesionService.AutenticacionAsync(new Shared.DTOs.LoginDTO
             {
                 Email = email,
                 Password = clave

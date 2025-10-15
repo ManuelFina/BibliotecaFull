@@ -1,5 +1,5 @@
 ﻿@page "/registro"
-@inject IUsuarioService UsuarioService
+@inject ISesionService SesionService
 @inject NavigationManager Navigation
 
 <h3>Registro de Cliente</h3>
@@ -45,7 +45,7 @@
     {
         try
         {
-            var usuario = await UsuarioService.RegistrarAsync(registro);
+            var usuario = await SesionService.RegistrarAsync(registro);
 
             if (usuario != null)
             {

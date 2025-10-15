@@ -22,17 +22,16 @@ namespace PracticoBiblioteca.API.Controllers
             _logger = logger;
         }
 
-        [HttpPost("Authenticate")]
+        [HttpPost("autenticacion")]
+        [AllowAnonymous]
         public async Task<IActionResult> Autenticacion([FromBody] LoginDTO login)
         {
             try
             {
                 var sesion = await _usuarioRepository.AutenticacionAsync(login);
 
-                if (sesion == null)
-                {
-                    return Unauthorized("Credenciales inválidas o usuario inactivo.");
-                }
+                if (sesion == null) return Unauthorized("Credenciales inválidas o usuario inactivo.");
+                
                 return Ok(sesion);
             }
             catch (Exception ex)

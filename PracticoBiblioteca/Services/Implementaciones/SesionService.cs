@@ -3,6 +3,9 @@ using PracticoBiblioteca.Services.Interfaces;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using PracticoBiblioteca.Shared.Models;
+using Microsoft.Extensions.Logging;
+
 
 namespace PracticoBiblioteca.Services.Implementaciones
 {
@@ -18,20 +21,21 @@ namespace PracticoBiblioteca.Services.Implementaciones
             _httpClient.DefaultRequestHeaders.Accept.Clear();
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
         }
-        public async Task<SesionDTO?> IniciarSesionAsync(LoginDTO login)
+        public async Task<SesionDTO?> AutenticacionAsync(LoginDTO login)
         {
-            try
-            {
-                var response = await _httpClient.PostAsJsonAsync("api/usuarios/authenticate", login);
-                if (!response.IsSuccessStatusCode) return null;
+                var response = await _httpClient.PostAsJsonAsync("api/usuarios/autenticacion", login);
+                response.EnsureSuccessStatusCode();
 
-                _sesionActual = await response.Content.ReadFromJsonAsync<SesionDTO>();
-                return _sesionActual;
-            }
-            catch
-            {
-                return null;
-            }
+                var result = await response.Content.ReadFromJsonAsync<SesionDTO>();
+                return result;
+        }
+        public async Task<Usuario> RegistrarAsync(RegistroDTO dto)
+        {
+            var response = await _httpClient.PostAsJsonAsync("api/usuarios/register", dto);
+            response.EnsureSuccessStatusCode();
+
+            var usuario = await response.Content.ReadFromJsonAsync<Usuario>();
+            return usuario!;
         }
         public void GuardarSesion(SesionDTO sesion)
         {
