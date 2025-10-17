@@ -61,8 +61,8 @@ namespace PracticoBiblioteca.API.Repositories.Implementaciones
 
             _context.Usuarios.Add(usuario);
             await _context.SaveChangesAsync();
-            return usuario;
 
+            return usuario;
         }
 
         public async Task<bool> ExistePorEmailAsync(string email)

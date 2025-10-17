@@ -26,10 +26,35 @@
     <button type="submit" class="btn btn-primary">Registrarse</button>
 </EditForm>
 
-@if (!string.IsNullOrEmpty(mensaje))
+@if (mostrarModal)
 {
-    <p class="mt-2">@mensaje</p>
+    <div class="modal fade show d-block" tabindex="-1" style="background: rgba(0,0,0,0.5);">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Registro</h5>
+                    <button type="button" class="btn-close" @onclick="CerrarModal"></button>
+                </div>
+                <div class="modal-body">
+                    <p>@mensaje</p>
+                </div>
+                <div class="modal-footer">
+                    <button class="btn btn-primary" @onclick="IrAlInicio">Aceptar</button>
+                </div>
+            </div>
+        </div>
+    </div>
 }
+
+<style>
+    /* Opcional: evita scroll mientras el modal está abierto */
+    .modal.show.d-block {
+        position: fixed;
+        inset: 0;
+        overflow: hidden;
+        z-index: 1050;
+    }
+</style>
 
 @code {
     private RegistroDTO registro = new RegistroDTO
@@ -40,6 +65,7 @@
     };
 
     private string? mensaje;
+    private bool mostrarModal = false;
 
     private async Task OnRegister()
     {
@@ -50,16 +76,28 @@
             if (usuario != null)
             {
                 mensaje = "Usuario registrado correctamente ✅";
-                Navigation.NavigateTo("/");
             }
             else
             {
-                mensaje = "Error en el registro ❌";
+                mensaje = "Registro completado, pero el backend no devolvió datos 🤔";
             }
+
+            mostrarModal = true; // 👉 Muestra el modal
         }
         catch (Exception ex)
         {
             mensaje = $"Ocurrió un error: {ex.Message}";
+            mostrarModal = true;
         }
+    }
+
+    private void CerrarModal()
+    {
+        mostrarModal = false;
+    }
+
+    private void IrAlInicio()
+    {
+        Navigation.NavigateTo("/");
     }
 }

@@ -27,8 +27,8 @@ public class PrestamosController : ControllerBase
     public async Task<ActionResult<Prestamo>> ObtenerPorId(int id)
     {
         var prestamo = await _prestamoRepo.ObtenerPorIdAsync(id);
-        if (prestamo == null)
-            return NotFound();
+        if (prestamo == null) return NotFound();
+
         return Ok(prestamo);
     }
 
@@ -36,6 +36,7 @@ public class PrestamosController : ControllerBase
     public async Task<ActionResult<List<Prestamo>>> ObtenerPorUsuario(int usuarioId)
     {
         var prestamos = await _prestamoRepo.ObtenerPorUsuarioAsync(usuarioId);
+
         return Ok(prestamos);
     }
 
@@ -60,8 +61,7 @@ public class PrestamosController : ControllerBase
     public async Task<ActionResult> Devolver(int id)
     {
         var prestamo = await _prestamoRepo.ObtenerPorIdAsync(id);
-        if (prestamo == null)
-            return NotFound();
+        if (prestamo == null) return NotFound();
 
         await _prestamoRepo.DevolverAsync(id);
         return NoContent();

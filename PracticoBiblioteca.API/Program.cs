@@ -49,6 +49,7 @@ if (app.Environment.IsDevelopment())
     app.MapOpenApi();
 }
 
+app.UseCors("PermitirTodo"); 
 app.UseHttpsRedirection();
 app.UseAuthorization();
 app.MapControllers();

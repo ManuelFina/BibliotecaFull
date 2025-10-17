@@ -1,48 +1,44 @@
 ﻿using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using PracticoBiblioteca.API.Repositories.Implementaciones;
 using PracticoBiblioteca.API.Repositories.Interfaces;
 using PracticoBiblioteca.Shared.DTOs;
 using PracticoBiblioteca.Shared.Models;
 
-
-namespace PracticoBiblioteca.API.Controllers
+[Route("api/[controller]")]
+[ApiController]
+public class UsuariosController : ControllerBase
 {
-    [Route("api/[controller]")]
-    [ApiController]
-    public class UsuariosController : ControllerBase
+    private readonly IUsuarioRepository _usuarioRepository;
+    private readonly ILogger<UsuariosController> _logger;
+
+    public UsuariosController(IUsuarioRepository usuarioRepository, ILogger<UsuariosController> logger)
     {
-        private readonly IUsuarioRepository _usuarioRepository;
-        private readonly ILogger<UsuariosController> _logger;
+        _usuarioRepository = usuarioRepository;
+        _logger = logger;
+    }
 
-        public UsuariosController(IUsuarioRepository usuarioRepository, ILogger<UsuariosController> logger)
+    [HttpPost("autenticacion")]
+    [AllowAnonymous]
+    public async Task<IActionResult> Autenticacion([FromBody] LoginDTO login)
+    {
+        try
         {
-            _usuarioRepository = usuarioRepository;
-            _logger = logger;
+            var sesion = await _usuarioRepository.AutenticacionAsync(login);
+            if (sesion == null) return Unauthorized("Credenciales inválidas o usuario inactivo.");
+            return Ok(sesion);
         }
-
-        [HttpPost("autenticacion")]
-        [AllowAnonymous]
-        public async Task<IActionResult> Autenticacion([FromBody] LoginDTO login)
+        catch (Exception ex)
         {
-            try
-            {
-                var sesion = await _usuarioRepository.AutenticacionAsync(login);
-
-                if (sesion == null) return Unauthorized("Credenciales inválidas o usuario inactivo.");
-                
-                return Ok(sesion);
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Error en Authenticate. Detalle: {ex.Message}");
-                return StatusCode(StatusCodes.Status500InternalServerError, "Error interno del servidor");
-            }
+            _logger.LogError(ex, "Error en Autenticacion");
+            return StatusCode(500, "Error interno al autenticar el usuario");
         }
+    }
 
-        [HttpPost("register")]
-        public async Task<IActionResult> Registro(RegistroDTO dto)
+    [HttpPost("register")]
+    [AllowAnonymous]
+    public async Task<IActionResult> Registro(RegistroDTO dto)
+    {
+        try
         {
             var existe = await _usuarioRepository.ExistePorEmailAsync(dto.Email);
             if (existe) return BadRequest("Ya existe un usuario con ese correo");
@@ -57,65 +53,78 @@ namespace PracticoBiblioteca.API.Controllers
             };
 
             await _usuarioRepository.AgregarAsync(usuario);
-
             return Ok("Usuario registrado exitosamente");
         }
-
-        // GET: api/usuarios
-        [HttpGet]
-
-        public async Task<ActionResult<IEnumerable<Usuario>>> GetUsuarios()
+        catch (Exception ex)
         {
-            try
-            {
-                var usuarios = await _usuarioRepository.ObtenerTodosAsync();
-                return Ok(usuarios);
-            }
-            catch (Exception ex)
-            {
-                return StatusCode(500, $"Error al obtener usuarios: {ex.Message}");
-            }
+            _logger.LogError(ex, "Error en Registro");
+            return StatusCode(500, "Error interno al registrar el usuario");
         }
+    }
 
-        // GET: api/usuarios/5
-        [HttpGet("{id}")]
+    [HttpGet]
+    [Authorize(Roles = "Administrador")]
+    public async Task<ActionResult<IEnumerable<Usuario>>> GetUsuarios()
+    {
+        try
+        {
+            var usuarios = await _usuarioRepository.ObtenerTodosAsync();
+            return Ok(usuarios);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error en GetUsuarios");
+            return StatusCode(500, "Error interno al obtener usuarios");
+        }
+    }
 
-        public async Task<ActionResult<Usuario>> GetUsuario(int id)
+    [HttpGet("{id}")]
+    [Authorize(Roles = "Cliente,Administrador")]
+    public async Task<ActionResult<Usuario>> GetUsuario(int id)
+    {
+        try
         {
             var usuario = await _usuarioRepository.ObtenerPorIdAsync(id);
-            if (usuario == null)
-                return NotFound();
-
+            if (usuario == null) return NotFound();
             return Ok(usuario);
         }
-
-        // POST: api/usuarios
-        [HttpPost]
-
-        public async Task<ActionResult> PostUsuario([FromBody] Usuario usuario)
+        catch (Exception ex)
         {
-            await _usuarioRepository.AgregarAsync(usuario);
-            return CreatedAtAction(nameof(GetUsuario), new { id = usuario.Id }, usuario);
+            _logger.LogError(ex, "Error en GetUsuario");
+            return StatusCode(500, "Error interno al obtener el usuario");
         }
+    }
 
-        // PUT: api/usuarios/5
-        [HttpPut("{id}")]
-
-        public async Task<ActionResult> PutUsuario(int id, [FromBody] Usuario usuario)
+    [HttpPut("{id}")]
+    [Authorize(Roles = "Administrador")]
+    public async Task<ActionResult> PutUsuario(int id, [FromBody] Usuario usuario)
+    {
+        try
         {
-            if (id != usuario.Id)
-                return BadRequest("El ID no coincide");
-
+            if (id != usuario.Id) return BadRequest("El ID no coincide");
             await _usuarioRepository.ActualizarAsync(usuario);
             return NoContent();
         }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error en PutUsuario");
+            return StatusCode(500, "Error interno al actualizar el usuario");
+        }
+    }
 
-        // DELETE: api/usuarios/5
-        [HttpDelete("{id}")]
-        public async Task<ActionResult> DeleteUsuario(int id)
+    [HttpDelete("{id}")]
+    [Authorize(Roles = "Administrador")]
+    public async Task<ActionResult> DeleteUsuario(int id)
+    {
+        try
         {
             await _usuarioRepository.EliminarAsync(id);
             return NoContent();
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error en DeleteUsuario");
+            return StatusCode(500, "Error interno al eliminar el usuario");
         }
     }
 }
