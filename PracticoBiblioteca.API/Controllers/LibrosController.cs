@@ -38,8 +38,7 @@ namespace PracticoBiblioteca.API.Controllers
             try
             {
                 var libro = await _libroRepository.ObtenerPorIdAsync(id);
-                if (libro == null)
-                    return NotFound($"No se encontró el libro con Id {id}.");
+                if (libro == null) return NotFound($"No se encontró el libro con Id {id}.");
 
                 return Ok(libro);
             }
