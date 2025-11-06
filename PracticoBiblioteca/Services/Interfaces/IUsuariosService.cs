@@ -6,6 +6,7 @@ namespace PracticoBiblioteca.Services.Interfaces;
 
 public interface IUsuarioService
 {
+    Task<SesionDTO> AuthenticateAsync(LoginDTO login);
     Task<List<Usuario>> ObtenerTodosAsync();
     Task<Usuario?> ObtenerPorIdAsync(int id);
     Task AgregarAsync(Usuario usuario);

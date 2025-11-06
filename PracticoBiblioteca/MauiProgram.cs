@@ -18,7 +18,6 @@ namespace PracticoBiblioteca
 
             builder.Services.AddMauiBlazorWebView();
 
-            // Inyección de dependencias para HttpClient
             builder.Services.AddSingleton<HttpClient>(sp =>
             {
                 var navigationManager = sp.GetRequiredService<Microsoft.AspNetCore.Components.NavigationManager>();
@@ -29,11 +28,10 @@ namespace PracticoBiblioteca
                 };
             });
 
-            //cambiar inyeccion de dependencias por scopped
-
             builder.Services.AddScoped<ILibroService, LibroService>();
             builder.Services.AddScoped<IUsuarioService, UsuarioService>();
             builder.Services.AddScoped<ISesionService, SesionService>();
+            builder.Services.AddScoped<IPrestamoService, PrestamoService>();
 
 
 

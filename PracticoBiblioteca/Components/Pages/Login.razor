@@ -1,90 +1,86 @@
 ﻿@page "/"
+
+@using PracticoBiblioteca.Shared.DTOs
+@using PracticoBiblioteca.Services.Interfaces
+@inject NavigationManager navigation
+@inject IUsuarioService usuarioService
 @inject ISesionService SesionService
-@inject NavigationManager Nav
 
-<div class="container mt-5">
-    <div class="row justify-content-center">
-        <div class="col-md-4">
-            <div class="card shadow">
-                <div class="card-body text-center">
 
-                    <img src="img/logo.jpg" alt="Logo Biblioteca"
-                         style="max-width: 120px; margin-bottom: 20px;" />
-
-                    <h3 class="card-title mb-4">
-                        <i class="bi bi-box-arrow-in-right me-2"></i>Iniciar Sesión
-                    </h3>
-
-                    <div class="mb-3 text-start">
-                        <label for="email" class="form-label">
-                            <i class="bi bi-envelope-fill me-1"></i>Correo electrónico
-                        </label>
-                        <input id="email" @bind="email" type="email" class="form-control" placeholder="Ingrese su correo" />
-                    </div>
-
-                    <div class="mb-3 text-start">
-                        <label for="clave" class="form-label">
-                            <i class="bi bi-lock-fill me-1"></i>Contraseña
-                        </label>
-                        <input id="clave" @bind="clave" type="password" class="form-control" placeholder="Ingrese su contraseña" />
-                    </div>
-
-                    <button class="btn btn-primary w-100" @onclick="IniciarSesionAsync">
-                        <i class="bi bi-box-arrow-in-right me-1"></i> Iniciar sesión
-                    </button>
-
-                    <button class="btn btn-link mb-2 text-start fw-semibold p-0" @onclick='() => Nav.NavigateTo("/registro")'>
-                        ¿No tienes cuenta? Regístrate aquí
-                    </button>
-
-                    @if (!string.IsNullOrEmpty(errorMensaje))
-                    {
-                        <div class="alert alert-danger mt-3" role="alert">
-                            <i class="bi bi-exclamation-triangle-fill me-2"></i>@errorMensaje
-                        </div>
-                    }
-                </div>
+<div class="d-flex justify-content-center align-items-center min-vh-100 bg-light">
+    <div class="card shadow-lg border-0 rounded-4" style="max-width: 420px; width: 100%;">
+        <div class="card-body p-5">
+            <div class="text-center mb-4">
+                <i class="bi bi-book-half text-primary display-4"></i>
+                <h3 class="mt-2 fw-bold text-primary">Biblioteca Virtual</h3>
+                <p class="text-muted mb-0">Accedé a tu cuenta</p>
             </div>
+
+            @if (isLoading)
+            {
+                <div class="text-center mb-3">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Cargando...</span>
+                    </div>
+                    <span class="ms-2 text-primary fw-semibold">Verificando datos...</span>
+                </div>
+            }
+
+            <EditForm Model="@loginModel" OnValidSubmit="HandleLogin">
+                <DataAnnotationsValidator />
+                <ValidationSummary />
+
+                <div class="form-floating mb-3">
+                    <InputText id="email" class="form-control rounded-3" @bind-Value="loginModel.Email" placeholder="Correo electrónico" />
+                    <label for="email"><i class="bi bi-envelope-at-fill me-2 text-primary"></i>Correo electrónico</label>
+                    <ValidationMessage For="@(() => loginModel.Email)" />
+                </div>
+
+                <div class="form-floating mb-4">
+                    <InputText id="password" type="password" class="form-control rounded-3" @bind-Value="loginModel.Password" placeholder="Contraseña" />
+                    <label for="password"><i class="bi bi-shield-lock-fill me-2 text-primary"></i>Contraseña</label>
+                    <ValidationMessage For="@(() => loginModel.Password)" />
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 py-2 fw-semibold shadow-sm">
+                    <i class="bi bi-box-arrow-in-right me-2"></i>Ingresar
+                </button>
+
+                <div class="text-center mt-3">
+                    <a href="#" class="text-decoration-none small text-secondary">
+                        <i class="bi bi-question-circle me-1"></i>¿Olvidaste tu contraseña?
+                    </a>
+                </div>
+            </EditForm>
         </div>
     </div>
 </div>
 
+
 @code {
-    private string email = "";
-    private string clave = "";
-    private string errorMensaje = "";
+    private LoginModel loginModel = new();
+    private bool isLoading = false;
 
-    private async Task IniciarSesionAsync()
+    private async Task HandleLogin()
     {
-        errorMensaje = "";
-
-        try
+        var login = new LoginDTO
         {
-            var login = new Shared.DTOs.LoginDTO
-            {
-                Email = email,
-                Password = clave
-            };
+            Email = loginModel.Email,
+            Password = loginModel.Password
+        };
 
-            var sesion = await SesionService.AutenticacionAsync(login);
+        isLoading = true;
+        var result = await usuarioService.AuthenticateAsync(login);
+        isLoading = false;
 
-            if (sesion != null)
-            {
-                SesionService.GuardarSesion(sesion);
-
-                // Redirigir directo al menú
-                Nav.NavigateTo("/menu", true); // true = recarga completa, previene problemas de render
-            }
-            else
-            {
-                errorMensaje = "Correo o contraseña incorrectos.";
-            }
+        if (result != null)
+        {
+            SesionService.GuardarSesion(result); 
+            navigation.NavigateTo("/menu");
         }
-        catch (Exception ex)
+        else
         {
-            errorMensaje = "Error al conectar con el servidor.";
-            Console.WriteLine($"Error login: {ex}");
+            Console.WriteLine("Login incorrecto o usuario inactivo");
         }
     }
-
 }

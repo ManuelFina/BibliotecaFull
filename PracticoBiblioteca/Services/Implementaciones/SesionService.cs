@@ -1,39 +1,22 @@
 ﻿using PracticoBiblioteca.Shared.DTOs;
 using PracticoBiblioteca.Services.Interfaces;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Net.Http.Json;
 using PracticoBiblioteca.Shared.Models;
 using Microsoft.Extensions.Logging;
-using System.Text.Json;
-
-
 
 namespace PracticoBiblioteca.Services.Implementaciones
 {
     public class SesionService : ISesionService
     {
         private readonly HttpClient _httpClient;
+        private readonly ILogger<SesionService> _logger;
         private SesionDTO? _sesionActual;
-        private SesionDTO? _sesionCache;
 
-        public SesionService(HttpClient httpClient)
+        public SesionService(HttpClient httpClient, ILogger<SesionService> logger)
         {
             _httpClient = httpClient;
-            _httpClient.DefaultRequestHeaders.Accept.Clear();
-            _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
-        }
-
-        public async Task<SesionDTO?> AutenticacionAsync(LoginDTO login)
-        {
-            var response = await _httpClient.PostAsJsonAsync("api/usuarios/autenticacion", login);
-            response.EnsureSuccessStatusCode();
-
-            var contenido = await response.Content.ReadAsStringAsync();
-            return JsonSerializer.Deserialize<SesionDTO>(
-                contenido,
-                new JsonSerializerOptions { PropertyNameCaseInsensitive = true }
-            );
+            _logger = logger;
         }
 
         public async Task<Usuario?> RegistrarAsync(RegistroDTO dto)
@@ -49,14 +32,13 @@ namespace PracticoBiblioteca.Services.Implementaciones
             }
             catch
             {
-               
                 return null;
             }
         }
 
         public void GuardarSesion(SesionDTO sesion)
         {
-            _sesionCache = sesion;
+            _sesionActual = sesion;
         }
 
         public Task<SesionDTO?> ObtenerSesionAsync()

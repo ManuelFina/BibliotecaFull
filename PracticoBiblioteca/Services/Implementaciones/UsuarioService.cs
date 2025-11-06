@@ -17,6 +17,23 @@ public class UsuarioService : IUsuarioService
         _logger = logger;
     }
 
+    public async Task<SesionDTO> AuthenticateAsync(LoginDTO login)
+    {
+        try
+        {
+            var response = await _httpClient.PostAsJsonAsync("api/usuarios/autenticacion", login);
+            response.EnsureSuccessStatusCode();
+
+            var result = await response.Content.ReadFromJsonAsync<SesionDTO>();
+            return result;
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error en la autenticación");
+            throw;
+        }
+    }
+
     public async Task<List<Usuario>> ObtenerTodosAsync()
     {
         try

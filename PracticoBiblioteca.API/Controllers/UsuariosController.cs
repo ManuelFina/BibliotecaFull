@@ -63,7 +63,8 @@ public class UsuariosController : ControllerBase
     }
 
     [HttpGet]
-    [Authorize(Roles = "Administrador")]
+    [AllowAnonymous]
+
     public async Task<ActionResult<IEnumerable<Usuario>>> GetUsuarios()
     {
         try
@@ -79,7 +80,7 @@ public class UsuariosController : ControllerBase
     }
 
     [HttpGet("{id}")]
-    [Authorize(Roles = "Cliente,Administrador")]
+    [AllowAnonymous]
     public async Task<ActionResult<Usuario>> GetUsuario(int id)
     {
         try
@@ -96,7 +97,7 @@ public class UsuariosController : ControllerBase
     }
 
     [HttpPut("{id}")]
-    [Authorize(Roles = "Administrador")]
+    [AllowAnonymous]
     public async Task<ActionResult> PutUsuario(int id, [FromBody] Usuario usuario)
     {
         try
@@ -113,7 +114,7 @@ public class UsuariosController : ControllerBase
     }
 
     [HttpDelete("{id}")]
-    [Authorize(Roles = "Administrador")]
+    [AllowAnonymous]
     public async Task<ActionResult> DeleteUsuario(int id)
     {
         try
